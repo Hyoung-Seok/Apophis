@@ -9,11 +9,6 @@ public class MapBuilder : MonoBehaviour
 
     private GameObject _cellObj;
     
-    private void Start()
-    {
-        CreateGrid();    
-    }
-    
     public void CreateGrid()
     {
         SetCellProperties();
@@ -35,6 +30,14 @@ public class MapBuilder : MonoBehaviour
         }
         
         DestroyImmediate(_cellObj);
+    }
+
+    public void DestroyGrid()
+    {
+        for (var i = transform.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(transform.GetChild(i).gameObject);
+        }
     }
 
     private void SetCellProperties()
