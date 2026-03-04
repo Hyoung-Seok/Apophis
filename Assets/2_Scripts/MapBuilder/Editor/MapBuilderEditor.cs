@@ -22,10 +22,10 @@ public class MapBuilderEditor : Editor
 
     private void BindingButton()
     {
-        var createGird = _root.Q<Button>("CreateGridBtn");
+        var createGrid = _root.Q<Button>("CreateGridBtn");
         var destroyGrid = _root.Q<Button>("DestroyGridBtn");
         
-        createGird.clicked += _mapBuilder.CreateGrid;
+        createGrid.clicked += _mapBuilder.CreateGrid;
         destroyGrid.clicked += _mapBuilder.DestroyGrid;
     }
 }
