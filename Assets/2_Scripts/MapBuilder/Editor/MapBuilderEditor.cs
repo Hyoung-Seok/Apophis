@@ -24,8 +24,10 @@ public class MapBuilderEditor : Editor
     {
         var createGrid = _root.Q<Button>("CreateGridBtn");
         var destroyGrid = _root.Q<Button>("DestroyGridBtn");
+        var showPalette = _root.Q<Button>("OpenPaletteBtn");
         
         createGrid.clicked += _mapBuilder.CreateGrid;
         destroyGrid.clicked += _mapBuilder.DestroyGrid;
+        showPalette.clicked += PaletteEditorWindow.ShowWindow;
     }
 }
