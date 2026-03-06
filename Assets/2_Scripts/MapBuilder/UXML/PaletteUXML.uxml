@@ -3,7 +3,7 @@
         <ui:VisualElement name="MainElements" style="flex-grow: 0; width: 60%;">
             <ui:VisualElement name="PaletteSettings" style="flex-grow: 0; margin-top: 5px; margin-bottom: 5px; border-right-color: rgb(255, 255, 255);">
                 <ui:Label text="Map Builder Palette" name="Title" style="-unity-text-align: middle-center; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=8fbe25414d584d04b8e0e74fa70e1818&amp;type=3#SCDream5&quot;); font-size: 30px; margin-top: 5px; margin-bottom: 5px;"/>
-                <ui:DropdownField label="오브젝트 카테고리" name="ObjCategoryDropdown" style="margin-top: 5px; margin-bottom: 5px; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=8fbe25414d584d04b8e0e74fa70e1818&amp;type=3#SCDream5&quot;); margin-right: 20px;"/>
+                <ui:DropdownField label="오브젝트 카테고리" name="ObjCategoryDropdown" style="margin-top: 5px; margin-bottom: 5px; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=8fbe25414d584d04b8e0e74fa70e1818&amp;type=3#SCDream5&quot;); margin-right: 20px; font-size: 18px;"/>
             </ui:VisualElement>
             <ui:ScrollView name="AssetList" style="flex-direction: row; flex-wrap: wrap;">
                 <ui:VisualElement name="AssetContainer" style="flex-grow: 1; flex-direction: row; flex-wrap: wrap;"/>
