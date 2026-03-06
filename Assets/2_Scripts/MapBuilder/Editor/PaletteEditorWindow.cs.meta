@@ -6,6 +6,7 @@ MonoImporter:
   defaultReferences:
   - m_ViewDataDictionary: {instanceID: 0}
   - paletteAsset: {fileID: 9197481963319205126, guid: 7c9af274a911c9449a1add2c6fb791fe, type: 3}
+  - paletteItem: {fileID: 9197481963319205126, guid: 47bc9bee1f43e6f4695f34f5155e3708, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
