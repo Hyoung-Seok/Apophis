@@ -26,7 +26,7 @@ public class PaletteEditorWindow : EditorWindow
     
     private void InitElements()
     {
-        var category = _root.Q<DropdownField>("ObjCategoryDropdown");
-        category.choices = BuilderAssetLoader.GetAssetCategories();
+        var categoryDropdown = _root.Q<DropdownField>("ObjCategoryDropdown");
+        categoryDropdown.choices = BuilderAssetLoader.GetAssetCategories();
     }
 }
