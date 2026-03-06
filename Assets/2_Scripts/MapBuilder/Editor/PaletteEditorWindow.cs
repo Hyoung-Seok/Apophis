@@ -19,5 +19,14 @@ public class PaletteEditorWindow : EditorWindow
     public void CreateGUI()
     {
         _root = paletteAsset.CloneTree();
+        rootVisualElement.Add(_root);
+        
+        InitElements();
+    }
+    
+    private void InitElements()
+    {
+        var category = _root.Q<DropdownField>("ObjCategoryDropdown");
+        category.choices = BuilderAssetLoader.GetAssetCategories();
     }
 }
