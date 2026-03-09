@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
 {
+    public LayerMask CellLayer => cellLayer;
+    public LayerMask GroundLayer => groundLayer;
+    public Transform LevelParent => levelParent;
+    
     [SerializeField] private Vector2Int gridSize;
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private float cellSize = 1f;
