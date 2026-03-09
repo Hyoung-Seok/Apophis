@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/2_Scripts/MapBuilder/UXML/PaletteItemStyleSheets.uss?fileID=7433441132597879392&amp;guid=5507c950b78d7664a823e89dd9312cf2&amp;type=3#PaletteItemStyleSheets"/>
     <ui:VisualElement name="PaletteItemElements" style="flex-grow: 0; width: 100%; height: 100%;">
         <ui:Button text="" name="AssetButton" selectable="true" class="button" style="height: 80%; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; border-bottom-left-radius: 30px;"/>
-        <ui:Button text="" name="FavButton" class="button" style="width: 50px; height: 50px; transform-origin: center; position: absolute; right: 0; background-image: url(&quot;project://database/Assets/6_Image/MapBuilder/starEdge.png?fileID=2800000&amp;guid=b39e24166aca27240867dc848821730d&amp;type=3#starEdge&quot;); background-color: rgba(88, 88, 88, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;"/>
+        <ui:Button text="" name="FavButton" class="button fav-off" style="width: 50px; height: 50px; transform-origin: center; position: absolute; right: 0; background-color: rgba(88, 88, 88, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;"/>
         <ui:Label text="Item Name" name="AssetName" style="height: auto; -unity-text-align: middle-center; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=8fbe25414d584d04b8e0e74fa70e1818&amp;type=3#SCDream5&quot;); font-size: 16px; flex-grow: 1;"/>
     </ui:VisualElement>
 </ui:UXML>

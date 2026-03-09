@@ -9,4 +9,10 @@
     scale: 1.1 1 1.1;
 }
 
+.fav-on {
+    background-image: url("project://database/Assets/6_Image/MapBuilder/star.png?fileID=2800000&guid=d7586f411b4d7704d9790565520c9b7e&type=3#star");
+}
 
+.fav-off {
+    background-image: url("project://database/Assets/6_Image/MapBuilder/starEdge.png?fileID=2800000&guid=b39e24166aca27240867dc848821730d&type=3#starEdge");
+}
