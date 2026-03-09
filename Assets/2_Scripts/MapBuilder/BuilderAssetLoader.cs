@@ -6,10 +6,10 @@ using UnityEngine;
 
 public static class BuilderAssetLoader
 {
-    public static Dictionary<string, List<string>> BuilderAssets => _builderAssets;
+    public static Dictionary<string, List<AssetData>> BuilderAssets => _builderAssets;
     
-    private static Dictionary<string, List<string>> _builderAssets 
-        = new Dictionary<string, List<string>>();
+    private static Dictionary<string, List<AssetData>> _builderAssets 
+        = new Dictionary<string, List<AssetData>>();
     
     private const string ROOT_PATH = "Assets/3_Prefabs/MapBuilder";
 
@@ -23,8 +23,15 @@ public static class BuilderAssetLoader
         foreach (var category in categories)
         {
             var guids = AssetDatabase.FindAssets("t:prefab", new[] {ROOT_PATH + "/" +  category});
-            var paths = guids.Select(AssetDatabase.GUIDToAssetPath).ToList();
-            _builderAssets[category] = paths;
+            _builderAssets[category] = new List<AssetData>();
+
+            foreach (var guid in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var name = Path.GetFileNameWithoutExtension(path);
+                
+                _builderAssets[category].Add(new AssetData(name, path));
+            }
         }
     }
 

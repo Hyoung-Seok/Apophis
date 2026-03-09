@@ -9,6 +9,7 @@ public class MapBuilderEditor : Editor
     
     private VisualElement _root;
     private MapBuilder _mapBuilder;
+    private PaletteEditorWindow _paletteEditor;
     
     public override VisualElement CreateInspectorGUI()
     {
@@ -28,6 +29,11 @@ public class MapBuilderEditor : Editor
         
         createGrid.clicked += _mapBuilder.CreateGrid;
         destroyGrid.clicked += _mapBuilder.DestroyGrid;
-        showPalette.clicked += PaletteEditorWindow.ShowWindow;
+        showPalette.clicked += ShowPaletteEditorWindow;
+    }
+
+    private void ShowPaletteEditorWindow()
+    {
+        _paletteEditor = PaletteEditorWindow.ShowWindow(); 
     }
 }
