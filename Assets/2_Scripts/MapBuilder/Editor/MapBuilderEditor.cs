@@ -11,6 +11,10 @@ public class MapBuilderEditor : Editor
     private VisualElement _root;
     private MapBuilder _mapBuilder;
     private PaletteEditorWindow _paletteEditor;
+
+    private int _prevIndex = 1;
+    private const float HIGHLIGHT_ALPHA = 1f;
+    private const float ORIGIN_ALPHA = 0.3f;
     
     public override VisualElement CreateInspectorGUI()
     {
@@ -34,16 +38,24 @@ public class MapBuilderEditor : Editor
 
         switch (e.type)
         {
+            case EventType.MouseMove:
+                if (!TryGetHitCell(e, out var rayHit)) return;
+
+                var index = rayHit.transform.GetSiblingIndex();
+                if (_prevIndex == index) return;
+                
+                _mapBuilder.Cells[_prevIndex].SetAlpha(ORIGIN_ALPHA);
+                _mapBuilder.Cells[index].SetAlpha(HIGHLIGHT_ALPHA);
+
+                _prevIndex = index;
+                SceneView.RepaintAll();
+                break;
+            
             case EventType.MouseDown:
                 if (e.button != 0) return;
-                var ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
-
-                if (!Physics.Raycast(ray, out var hit, 1000f, _mapBuilder.CellLayer) ||
-                        _paletteEditor?.SelectedAsset == null)
-                {
-                    return;
-                }
-
+                if (!TryGetHitCell(e, out var hit)) return;
+                if (_paletteEditor?.SelectedAsset is null) return;
+                
                 var asset = AssetDatabase.LoadAssetAtPath<GameObject>(_paletteEditor.SelectedAsset.Path);
                 var obj = (GameObject)PrefabUtility.InstantiatePrefab(asset, _mapBuilder.LevelParent);
                 
@@ -56,6 +68,13 @@ public class MapBuilderEditor : Editor
             default:
                 return;
         }
+    }
+
+    private bool TryGetHitCell(Event e, out RaycastHit hit)
+    {
+        var ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
+
+        return Physics.Raycast(ray, out hit, 1000f, _mapBuilder.CellLayer);
     }
 
     private void BindingButton()

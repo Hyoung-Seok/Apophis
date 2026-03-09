@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [SelectionBase]
@@ -7,16 +8,19 @@ public class MapBuilder : MonoBehaviour
     public LayerMask GroundLayer => groundLayer;
     public Transform GridParent => gridParent;
     public Transform LevelParent => levelParent;
+    public Cell[] Cells => cells;
     
     [SerializeField] private Vector2Int gridSize;
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private float cellSize = 1f;
     [SerializeField] private float cellInterval = 0.1f;
 
-    [SerializeField, HideInInspector]private Transform gridParent;
+    [SerializeField, HideInInspector] private Transform gridParent;
     [SerializeField] private Transform levelParent;
     [SerializeField] private LayerMask cellLayer;
     [SerializeField] private LayerMask groundLayer;
+
+    [SerializeField] private Cell[] cells;
     
     public void CreateGrid()
     {
@@ -27,6 +31,8 @@ public class MapBuilder : MonoBehaviour
             Debug.LogError("셀 프리팹이 할당되지 않았습니다.");
             return;
         }
+        
+        cells = new Cell[gridSize.x * gridSize.y];
         gridParent = new GameObject("GridParent").transform;    
         
         var cell = SetCellProperties();
@@ -44,6 +50,8 @@ public class MapBuilder : MonoBehaviour
                 var cellPos = new Vector3(startPos.x + (x * cellSize), startPos.y, startPos.z - (y * cellSize));
                 var obj = Instantiate(cell, cellPos, Quaternion.identity, gridParent);
                 obj.name = $"Cell[{x},{y}]";
+
+                cells[y * gridSize.y + x] = obj.GetComponent<Cell>();
             }
         }
         
