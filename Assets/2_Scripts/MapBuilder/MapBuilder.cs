@@ -51,7 +51,7 @@ public class MapBuilder : MonoBehaviour
                 var obj = Instantiate(cell, cellPos, Quaternion.identity, gridParent);
                 obj.name = $"Cell[{x},{y}]";
 
-                cells[y * gridSize.y + x] = obj.GetComponent<Cell>();
+                cells[y * gridSize.x + x] = obj.GetComponent<Cell>();
             }
         }
         

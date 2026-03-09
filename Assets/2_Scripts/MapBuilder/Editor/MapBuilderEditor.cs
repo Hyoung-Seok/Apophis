@@ -1,4 +1,3 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,7 +11,7 @@ public class MapBuilderEditor : Editor
     private MapBuilder _mapBuilder;
     private PaletteEditorWindow _paletteEditor;
 
-    private int _prevIndex = 1;
+    private int _prevIndex = 0;
     private const float HIGHLIGHT_ALPHA = 1f;
     private const float ORIGIN_ALPHA = 0.3f;
     

@@ -12,8 +12,18 @@ public static class BuilderAssetLoader
         = new Dictionary<string, List<AssetData>>();
     
     private const string ROOT_PATH = "Assets/3_Prefabs/MapBuilder";
+    
+    public static List<string> GetAssetCategories()
+    {
+        if (_builderAssets.Count == 0)
+        {
+            LoadAllAssets();
+        }
+        
+        return _builderAssets.Keys.ToList();
+    }
 
-    public static void LoadAllAssets()
+    private static void LoadAllAssets()
     {
         _builderAssets.Clear();
         
@@ -22,7 +32,7 @@ public static class BuilderAssetLoader
 
         foreach (var category in categories)
         {
-            var guids = AssetDatabase.FindAssets("t:prefab", new[] {ROOT_PATH + "/" +  category});
+            var guids = AssetDatabase.FindAssets("t:prefab", new[] {Path.Combine(ROOT_PATH, category)});
             _builderAssets[category] = new List<AssetData>();
 
             foreach (var guid in guids)
@@ -34,15 +44,4 @@ public static class BuilderAssetLoader
             }
         }
     }
-
-    public static List<string> GetAssetCategories()
-    {
-        if (_builderAssets.Count == 0)
-        {
-            LoadAllAssets();
-        }
-        
-        return _builderAssets.Keys.ToList();
-    }
-    
 }
