@@ -6,6 +6,11 @@ public class MapBuilder : MonoBehaviour
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private float cellSize = 1f;
     [SerializeField] private float cellInterval = 0.1f;
+
+    [SerializeField] private Transform gridParent;
+    [SerializeField] private Transform levelParent;
+    [SerializeField] private LayerMask cellLayer;
+    [SerializeField] private LayerMask groundLayer;
     
     public void CreateGrid()
     {
@@ -30,7 +35,7 @@ public class MapBuilder : MonoBehaviour
             for (var x = 0; x < gridSize.x; x++)
             {
                 var cellPos = new Vector3(startPos.x + (x * cellSize), startPos.y, startPos.z - (y * cellSize));
-                var obj = Instantiate(cell, cellPos, Quaternion.identity,  transform);
+                var obj = Instantiate(cell, cellPos, Quaternion.identity, gridParent);
                 obj.name = $"Cell[{x},{y}]";
             }
         }
@@ -40,9 +45,9 @@ public class MapBuilder : MonoBehaviour
 
     public void DestroyGrid()
     {
-        for (var i = transform.childCount - 1; i >= 0; i--)
+        for (var i = gridParent.childCount - 1; i >= 0; i--)
         {
-            DestroyImmediate(transform.GetChild(i).gameObject);
+            DestroyImmediate(gridParent.GetChild(i).gameObject);
         }
     }
 
