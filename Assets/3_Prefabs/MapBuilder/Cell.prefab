@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8018590757598480177}
   - component: {fileID: 5945403985385510304}
+  - component: {fileID: 3324776666211336306}
   m_Layer: 11
   m_Name: Cell
   m_TagString: Untagged
@@ -54,6 +55,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.15, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3324776666211336306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671675178997267945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88be69f1b1c907340b11c657306312c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Cell
+  cellRenderer: {fileID: 7948175711590674923}
 --- !u!1 &7061841808665983499
 GameObject:
   m_ObjectHideFlags: 0
