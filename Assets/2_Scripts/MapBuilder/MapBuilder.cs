@@ -1,9 +1,11 @@
 using UnityEngine;
 
+[SelectionBase]
 public class MapBuilder : MonoBehaviour
 {
     public LayerMask CellLayer => cellLayer;
     public LayerMask GroundLayer => groundLayer;
+    public Transform GridParent => gridParent;
     public Transform LevelParent => levelParent;
     
     [SerializeField] private Vector2Int gridSize;
@@ -11,7 +13,7 @@ public class MapBuilder : MonoBehaviour
     [SerializeField] private float cellSize = 1f;
     [SerializeField] private float cellInterval = 0.1f;
 
-    [SerializeField] private Transform gridParent;
+    [SerializeField, HideInInspector]private Transform gridParent;
     [SerializeField] private Transform levelParent;
     [SerializeField] private LayerMask cellLayer;
     [SerializeField] private LayerMask groundLayer;
@@ -19,12 +21,13 @@ public class MapBuilder : MonoBehaviour
     public void CreateGrid()
     {
         DestroyGrid();
-
+        
         if (cellPrefab == null)
         {
             Debug.LogError("셀 프리팹이 할당되지 않았습니다.");
             return;
         }
+        gridParent = new GameObject("GridParent").transform;    
         
         var cell = SetCellProperties();
         
@@ -49,10 +52,12 @@ public class MapBuilder : MonoBehaviour
 
     public void DestroyGrid()
     {
-        for (var i = gridParent.childCount - 1; i >= 0; i--)
+        if (gridParent == null)
         {
-            DestroyImmediate(gridParent.GetChild(i).gameObject);
+            return;
         }
+        
+        DestroyImmediate(gridParent.gameObject);
     }
 
     private GameObject SetCellProperties()

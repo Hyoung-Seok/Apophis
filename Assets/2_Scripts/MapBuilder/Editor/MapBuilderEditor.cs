@@ -15,7 +15,12 @@ public class MapBuilderEditor : Editor
     public override VisualElement CreateInspectorGUI()
     {
         _root = mapBuilderAsset.CloneTree();
-        _mapBuilder = (MapBuilder)target; 
+        _mapBuilder = (MapBuilder)target;
+
+        if (EditorWindow.HasOpenInstances<PaletteEditorWindow>() == true)
+        {
+            _paletteEditor = EditorWindow.GetWindow<PaletteEditorWindow>();   
+        }
         
         BindingButton();
         
