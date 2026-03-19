@@ -11,6 +11,7 @@ public class MapBuilder : MonoBehaviour
     [SerializeField] private float cellInterval;
 
     private GameObject _cell;
+    private GameObject _gridParent;
     private const string CELL_PARENT_NAME = "GridParent";
 
     public void CreateGrid()
@@ -22,13 +23,13 @@ public class MapBuilder : MonoBehaviour
         var startX = center.x - (gridSize.x - 1) * 0.5f * cellSize;
         var startZ = center.z + (gridSize.y - 1) * 0.5f * cellSize;
 
-        var gridParent = new GameObject(CELL_PARENT_NAME).transform;
+        _gridParent = new GameObject(CELL_PARENT_NAME);
 
         for (var y = 0; y < gridSize.y; y++)
         {
             for (var x = 0; x < gridSize.x; x++)
             {
-                var cell = Instantiate(_cell, gridParent);
+                var cell = Instantiate(_cell, _gridParent.transform);
                 
                 cell.transform.position = new Vector3(startX + cellSize * x, center.y, startZ - cellSize * y);
                 cell.name = $"[{x},{y}]";
@@ -40,10 +41,9 @@ public class MapBuilder : MonoBehaviour
 
     public void DestroyGrid()
     {
-        var parent = GameObject.Find(CELL_PARENT_NAME);
-        if (parent ==null) return;
+        if (_gridParent ==null) return;
 
-        DestroyImmediate(parent);
+        DestroyImmediate(_gridParent);
     }
 
     private void InitCellObject()
