@@ -14,7 +14,15 @@ public class MapBuilderEditor : Editor
     {
         _root = visualTreeAsset.CloneTree();
         _mapBuilder = (MapBuilder)target;
+        
+        BindingButton();
 
         return _root;
+    }
+
+    private void BindingButton()
+    {
+        _root.Q<Button>("CreateGridBtn").clicked += _mapBuilder.CreateGrid;
+        _root.Q<Button>("DestroyGridBtn").clicked += _mapBuilder.DestroyGrid;
     }
 }
