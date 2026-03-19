@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
@@ -10,11 +11,7 @@ public class MapBuilder : MonoBehaviour
     [SerializeField] private float cellInterval;
 
     private GameObject _cell;
-
-    private void Start()
-    {
-        CreateGrid();
-    }
+    private const string CELL_PARENT_NAME = "GridParent";
 
     public void CreateGrid()
     {
@@ -25,7 +22,7 @@ public class MapBuilder : MonoBehaviour
         var startX = center.x - (gridSize.x - 1) * 0.5f * cellSize;
         var startZ = center.z + (gridSize.y - 1) * 0.5f * cellSize;
 
-        var gridParent = new GameObject("GridParent").transform;
+        var gridParent = new GameObject(CELL_PARENT_NAME).transform;
 
         for (var y = 0; y < gridSize.y; y++)
         {
@@ -43,7 +40,10 @@ public class MapBuilder : MonoBehaviour
 
     public void DestroyGrid()
     {
-        
+        var parent = GameObject.Find(CELL_PARENT_NAME);
+        if (parent ==null) return;
+
+        DestroyImmediate(parent);
     }
 
     private void InitCellObject()
@@ -54,7 +54,7 @@ public class MapBuilder : MonoBehaviour
         var quad = _cell.transform.GetChild(0);
         var modelSize = cellSize - cellInterval;
         
-        boxCollider.size = new Vector3(cellSize, cellSize, cellSize);
+        boxCollider.size = new Vector3(cellSize, 0.2f, cellSize);
         quad.localScale = new Vector3(modelSize, modelSize, modelSize);
     }
 }
