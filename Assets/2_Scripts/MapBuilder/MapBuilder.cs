@@ -3,36 +3,46 @@ using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
 {
+    public Cell[] Cells => cells;
+    public LayerMask CellLayer => cellLayer;
+    
     [SerializeField] private GameObject cellObj;
+    [SerializeField] private LayerMask cellLayer;
     [SerializeField] private Transform levelParent;
 
     [SerializeField] private Vector2Int gridSize;
     [SerializeField] private float cellSize;
     [SerializeField] private float cellInterval;
 
+    [SerializeField, HideInInspector] private Cell[] cells;
+    [SerializeField, HideInInspector] private GameObject gridParent;
+    
     private GameObject _cell;
-    private GameObject _gridParent;
     private const string CELL_PARENT_NAME = "GridParent";
 
     public void CreateGrid()
     {
         DestroyGrid();
         InitCellObject();
+        
+        cells = new Cell[gridSize.x * gridSize.y];
 
         var center = transform.position;
         var startX = center.x - (gridSize.x - 1) * 0.5f * cellSize;
         var startZ = center.z + (gridSize.y - 1) * 0.5f * cellSize;
 
-        _gridParent = new GameObject(CELL_PARENT_NAME);
+        gridParent = new GameObject(CELL_PARENT_NAME);
 
         for (var y = 0; y < gridSize.y; y++)
         {
             for (var x = 0; x < gridSize.x; x++)
             {
-                var cell = Instantiate(_cell, _gridParent.transform);
+                var cell = Instantiate(_cell, gridParent.transform);
                 
                 cell.transform.position = new Vector3(startX + cellSize * x, center.y, startZ - cellSize * y);
                 cell.name = $"[{x},{y}]";
+                
+                cells[y * gridSize.x + x] = cell.GetComponent<Cell>();
             }
         }
         
@@ -41,9 +51,9 @@ public class MapBuilder : MonoBehaviour
 
     public void DestroyGrid()
     {
-        if (_gridParent ==null) return;
+        if (gridParent ==null) return;
 
-        DestroyImmediate(_gridParent);
+        DestroyImmediate(gridParent);
     }
 
     private void InitCellObject()

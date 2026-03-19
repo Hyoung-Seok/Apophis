@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,6 +10,10 @@ public class MapBuilderEditor : Editor
     
     private MapBuilder _mapBuilder;
     private VisualElement _root;
+
+    private int _prevIndex = 0;
+    private const float ORIGIN_ALPHA = 0.3f;
+    private const float HIGLITE_ALPHA = 1f;
     
     public override VisualElement CreateInspectorGUI()
     {
@@ -18,6 +23,36 @@ public class MapBuilderEditor : Editor
         BindingButton();
 
         return _root;
+    }
+
+    private void OnSceneGUI()
+    {
+        var e = Event.current;
+        
+        switch (e.type)
+        {
+            case EventType.MouseMove:
+                var ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
+
+                if (Physics.Raycast(ray, out var hit, 1000f, _mapBuilder.CellLayer))
+                {
+                    var index = hit.transform.GetSiblingIndex();
+
+                    if (index != _prevIndex)
+                    {
+                        _mapBuilder.Cells[index].ChangeAlpha(HIGLITE_ALPHA);
+                        _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+                        
+                        _prevIndex = index;
+                    }
+                }
+                
+                Repaint();
+                break;
+            
+            default:
+                return;
+        }
     }
 
     private void BindingButton()

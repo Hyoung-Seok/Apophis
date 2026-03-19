@@ -165,6 +165,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapBuilder
   cellObj: {fileID: 4526162203927647184, guid: 4cb41879dae651845992f74a1fbf33b7, type: 3}
+  cellLayer:
+    serializedVersion: 2
+    m_Bits: 4096
   levelParent: {fileID: 1023604339}
   gridSize: {x: 10, y: 10}
   cellSize: 1

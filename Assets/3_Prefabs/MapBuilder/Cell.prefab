@@ -100,6 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3930194377542896582}
   - component: {fileID: 2595617412620193163}
+  - component: {fileID: 532194485496173696}
   m_Layer: 12
   m_Name: Cell
   m_TagString: Untagged
@@ -144,3 +145,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &532194485496173696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4526162203927647184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15611e6ca7556104aaff1abe59f8b479, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Cell
+  cellRenderer: {fileID: 2070705826735014546}
