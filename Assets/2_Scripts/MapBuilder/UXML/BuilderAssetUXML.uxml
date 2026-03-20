@@ -5,7 +5,7 @@
             <ui:Button text="" name="FavoriteBtn" parse-escape-sequences="true" icon-image="" style="width: 25px; height: 25px; position: absolute; right: 5px; top: 5px; background-image: url(&quot;project://database/Assets/6_Images/MapBuilder/starEdge.png?fileID=2800000&amp;guid=18daf241190a84a4687174f2d224eba2&amp;type=3#starEdge&quot;); -unity-background-image-tint-color: rgb(255, 255, 255); background-color: rgba(88, 88, 88, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;"/>
         </ui:VisualElement>
         <ui:VisualElement name="AssetDataArea" style="flex-grow: 0; height: 20%; justify-content: center;">
-            <ui:Label text="Name" name="AssetName" style="-unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=4485744e0583fc04dbb01d02726f04ca&amp;type=3#SCDream5&quot;); -unity-text-align: upper-center;"/>
+            <ui:Label text="Name" name="AssetName" style="-unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=4485744e0583fc04dbb01d02726f04ca&amp;type=3#SCDream5&quot;); -unity-text-align: upper-center; font-size: 20px;"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
