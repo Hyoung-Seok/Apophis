@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 [CustomEditor(typeof(MapBuilder))]
 public class MapBuilderEditor : Editor
 {
-    [SerializeField] private VisualTreeAsset visualTreeAsset;
+    [SerializeField] private VisualTreeAsset mapBuilderUxml;
     
     private MapBuilder _mapBuilder;
     private VisualElement _root;
@@ -17,7 +17,7 @@ public class MapBuilderEditor : Editor
     
     public override VisualElement CreateInspectorGUI()
     {
-        _root = visualTreeAsset.CloneTree();
+        _root = mapBuilderUxml.CloneTree();
         _mapBuilder = (MapBuilder)target;
         
         BindingButton();
@@ -59,5 +59,6 @@ public class MapBuilderEditor : Editor
     {
         _root.Q<Button>("CreateGridBtn").clicked += _mapBuilder.CreateGrid;
         _root.Q<Button>("DestroyGridBtn").clicked += _mapBuilder.DestroyGrid;
+        _root.Q<Button>("OpenPaletteBtn").clicked += PaletteCustomEditor.ShowWindow;
     }
 }
