@@ -15,7 +15,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:ScrollView name="AssetScrollView" style="margin-top: 20px; margin-bottom: 20px; margin-right: 10px; margin-left: 10px;">
-                <ui:VisualElement name="AssetContainer" style="flex-grow: 1; flex-direction: row; flex-wrap: wrap; align-items: stretch; justify-content: flex-start; align-content: auto; align-self: auto;">
+                <ui:VisualElement name="AssetsContainer" style="flex-grow: 1; flex-direction: row; flex-wrap: wrap; align-items: stretch; justify-content: flex-start; align-content: auto; align-self: auto;">
                     <ui:Button text="Button" style="width: 150px; height: 150px; background-image: none; margin-right: 5px; margin-left: 5px; margin-bottom: 10px; margin-top: 10px;"/>
                 </ui:VisualElement>
             </ui:ScrollView>
@@ -23,8 +23,8 @@
         <ui:VisualElement name="Line" style="flex-grow: 1; height: 100%; width: 5px; border-left-color: rgb(154, 154, 154); border-right-color: rgb(154, 154, 154); border-top-color: rgb(154, 154, 154); border-bottom-color: rgb(154, 154, 154); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;"/>
         <ui:VisualElement name="RightPanel" style="flex-grow: 0; width: 35%;">
             <ui:Label text="즐겨찾기" name="Title" style="-unity-font-definition: url(&quot;project://database/Assets/Font/SCDream6.otf?fileID=12800000&amp;guid=037de71a9d819054c943f90c4705f870&amp;type=3#SCDream6&quot;); -unity-text-align: middle-center; font-size: 35px; margin-top: 10px; margin-bottom: 10px;"/>
-            <ui:ScrollView name="AssetScrollView" style="margin-top: 20px; margin-bottom: 20px; margin-right: 10px; margin-left: 10px;">
-                <ui:VisualElement name="AssetContainer" style="flex-grow: 1; flex-direction: row; flex-wrap: wrap; align-items: stretch; justify-content: flex-start; align-content: auto; align-self: auto;">
+            <ui:ScrollView name="FavoriteScrollView" style="margin-top: 20px; margin-bottom: 20px; margin-right: 10px; margin-left: 10px;">
+                <ui:VisualElement name="FavoriteContainer" style="flex-grow: 1; flex-direction: row; flex-wrap: wrap; align-items: stretch; justify-content: flex-start; align-content: auto; align-self: auto;">
                     <ui:Button text="Button" style="width: 125px; height: 125px; background-image: none; margin-right: 5px; margin-left: 5px; margin-bottom: 10px; margin-top: 10px; align-items: auto;"/>
                 </ui:VisualElement>
             </ui:ScrollView>
