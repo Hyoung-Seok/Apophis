@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -14,12 +14,13 @@ public class PaletteCustomEditor : EditorWindow
 
     private static readonly Vector2Int WINDOW_SIZE = new (1280, 720);
     
-    private List<(TemplateContainer uxml, GameObject prefab)> _previewList;
     private DropdownField _assetsDropdownField;
     private TextField _assetsPath;
     private VisualElement _assetsContainer;
     
     private VisualElement _favoritesContainer;
+    private const string FAV_DATA_PATH = "Assets/7_Data/MapBuilder/FavAssetData.asset";
+    private FavAssetsData _favoritesData;
     
     
     public static void ShowWindow()
@@ -34,18 +35,20 @@ public class PaletteCustomEditor : EditorWindow
     {
         paletteUxml.CloneTree(rootVisualElement);
         
-        BindingElements();
+        BindElements();
         LoadAssets();
+        LoadOrCreateFavData();
+        RestoreFavData();
     }
 
-    private void BindingElements()
+    private void BindElements()
     {
         _assetsDropdownField = rootVisualElement.Q<DropdownField>("AssetCategory");
         _assetsPath = rootVisualElement.Q<TextField>("AssetPath");
         _assetsContainer = rootVisualElement.Q<VisualElement>("AssetsContainer");
         _favoritesContainer = rootVisualElement.Q<VisualElement>("FavoriteContainer");
 
-        _assetsDropdownField.RegisterValueChangedCallback(AddAssetsInContainer);
+        _assetsDropdownField.RegisterValueChangedCallback(OnCategoryChanged);
     }
 
     private void LoadAssets()
@@ -56,61 +59,124 @@ public class PaletteCustomEditor : EditorWindow
         _assetsDropdownField.choices = new List<string>(MapBuilderAssetLoader.BuilderAssetData.Keys);
     }
 
-    private void AddAssetsInContainer(ChangeEvent<string> evt)
+    private void OnCategoryChanged(ChangeEvent<string> evt)
     {
         _assetsContainer.Clear();
         
         var category = _assetsDropdownField.value;
-        _previewList = new List<(TemplateContainer uxml, GameObject prefab)>();
+        var previewList = new List<(TemplateContainer uxml, GameObject prefab)>();
 
         foreach (var asset in MapBuilderAssetLoader.BuilderAssetData[category])
         {
-            var uxml = CreateAssetUxml(asset);
+            var uxml = CreateAssetUxml(asset, previewList);
             _assetsContainer.Add(uxml);
         }
         
-        AddLoadPreviewSchedule();
+        AddLoadPreviewSchedule(previewList);
     }
 
-    private TemplateContainer CreateAssetUxml(BuilderAssetData asset)
+    private TemplateContainer CreateAssetUxml(BuilderAssetData asset, 
+         List<(TemplateContainer uxml, GameObject prefab)> previewList)
     {
         var uxml = assetsUxml.CloneTree();
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(asset.Path);
-            
+
+        uxml.name = asset.Guid;
         uxml.Q<Label>("AssetName").text = asset.Name;
-        // TODO : 버튼, Fav버튼 클릭 시 동작 로직 구현
         uxml.Q<Button>("AssetSelectBtn").clicked += () => OnAssetSelected(asset);
+        uxml.Q<Button>("FavoriteBtn").clicked += () => OnFavButtonSelected(asset);
             
-        _previewList?.Add((uxml, prefab));
+        previewList.Add((uxml, prefab));
 
         return uxml;
     }
 
-    private void AddLoadPreviewSchedule()
+    private void AddLoadPreviewSchedule(List<(TemplateContainer uxml, GameObject prefab)> previewList)
     {
-        if (_previewList == null || _previewList.Count == 0) return;
+        if (previewList == null || previewList.Count == 0) return;
         
         rootVisualElement.schedule.Execute(() =>
         {
-            for (var i = _previewList.Count - 1; i >= 0; i--)
+            for (var i = previewList.Count - 1; i >= 0; i--)
             {
-                var img = AssetPreview.GetAssetPreview(_previewList[i].prefab);
+                var img = AssetPreview.GetAssetPreview(previewList[i].prefab);
 
                 if (img == null)
                 {
                     continue;
                 }
                 
-                _previewList[i].uxml.Q<Button>("AssetSelectBtn").style.backgroundImage = img;
-                _previewList.RemoveAt(i);
+                previewList[i].uxml.Q<Button>("AssetSelectBtn").style.backgroundImage = img;
+                previewList.RemoveAt(i);
             }
             
-        }).Until(() => _previewList.Count == 0).Every(100);
+        }).Until(() => previewList.Count == 0).Every(100);
     }
 
     private void OnAssetSelected(BuilderAssetData asset)
     {
         CurrentSelectedAsset = asset;
     }
-    
+
+    private void OnFavButtonSelected(BuilderAssetData asset)
+    {
+        if(_favoritesData == null) LoadOrCreateFavData();
+
+        if (!_favoritesData.ToggleFavorite(asset.Guid))
+        {
+            var element = _favoritesContainer.Q(asset.Guid);
+            _favoritesContainer.Remove(element);
+        }
+        else
+        {
+            var previewList =  new List<(TemplateContainer uxml, GameObject prefab)>();
+            var uxml = CreateAssetUxml(asset, previewList);
+            
+            ApplyFavStyle(uxml);
+            
+            _favoritesContainer.Add(uxml);
+            AddLoadPreviewSchedule(previewList);
+        }
+    }
+
+    private void LoadOrCreateFavData()
+    {
+        _favoritesData = AssetDatabase.LoadAssetAtPath<FavAssetsData>(FAV_DATA_PATH);
+
+        if (_favoritesData == null)
+        {
+            _favoritesData = CreateInstance<FavAssetsData>();
+            AssetDatabase.CreateAsset(_favoritesData, FAV_DATA_PATH);
+            AssetDatabase.SaveAssets();
+        }
+    }
+
+    private void RestoreFavData()
+    {
+        if (_favoritesData == null || _favoritesData.FavAssetGuids.Count == 0) return;
+        
+        var prevList = new List<(TemplateContainer uxml, GameObject prefab)>();
+
+        foreach (var guid in _favoritesData.FavAssetGuids)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            var assetName = Path.GetFileNameWithoutExtension(path);
+            var assetData = new BuilderAssetData(path, assetName, guid);
+            
+            var uxml  = CreateAssetUxml(assetData, prevList);
+            ApplyFavStyle(uxml);
+            
+            _favoritesContainer.Add(uxml);
+        }
+        
+        AddLoadPreviewSchedule(prevList);
+    }
+
+    private void ApplyFavStyle(TemplateContainer uxml)
+    {
+        var element = uxml.Q<VisualElement>("AssetInfo");
+        
+        uxml.Q<Label>("AssetName").style.fontSize = 12;
+        element.style.width = element.style.height = 125;
+    }
 }
