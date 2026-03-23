@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,11 +14,14 @@ public class PaletteCustomEditor : EditorWindow
 
     private static readonly Vector2Int WINDOW_SIZE = new (1280, 720);
     
+    private List<(TemplateContainer uxml, GameObject prefab)> _previewList;
     private DropdownField _assetsDropdownField;
     private TextField _assetsPath;
     private VisualElement _assetsContainer;
+    
     private VisualElement _favoritesContainer;
-
+    
+    
     public static void ShowWindow()
     {
         var window = GetWindow<PaletteCustomEditor>();
@@ -57,41 +61,56 @@ public class PaletteCustomEditor : EditorWindow
         _assetsContainer.Clear();
         
         var category = _assetsDropdownField.value;
-        var previewList = new List<(TemplateContainer, GameObject)>();
+        _previewList = new List<(TemplateContainer uxml, GameObject prefab)>();
 
         foreach (var asset in MapBuilderAssetLoader.BuilderAssetData[category])
         {
-            var root = assetsUxml.CloneTree();
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(asset.Path);
-            
-            root.Q<Label>("AssetName").text = asset.Name;
-            // TODO : 버튼, Fav버튼 클릭 시 동작 로직 구현
-            root.Q<Button>("AssetSelectBtn").clicked += () => OnAssetSelected(asset);
-            
-            previewList.Add((root, prefab));
-            _assetsContainer.Add(root);
+            var uxml = CreateAssetUxml(asset);
+            _assetsContainer.Add(uxml);
         }
+        
+        AddLoadPreviewSchedule();
+    }
+
+    private TemplateContainer CreateAssetUxml(BuilderAssetData asset)
+    {
+        var uxml = assetsUxml.CloneTree();
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(asset.Path);
+            
+        uxml.Q<Label>("AssetName").text = asset.Name;
+        // TODO : 버튼, Fav버튼 클릭 시 동작 로직 구현
+        uxml.Q<Button>("AssetSelectBtn").clicked += () => OnAssetSelected(asset);
+            
+        _previewList?.Add((uxml, prefab));
+
+        return uxml;
+    }
+
+    private void AddLoadPreviewSchedule()
+    {
+        if (_previewList == null || _previewList.Count == 0) return;
         
         rootVisualElement.schedule.Execute(() =>
         {
-            for (var i = previewList.Count - 1; i >= 0; i--)
+            for (var i = _previewList.Count - 1; i >= 0; i--)
             {
-                var img = AssetPreview.GetAssetPreview(previewList[i].Item2);
+                var img = AssetPreview.GetAssetPreview(_previewList[i].prefab);
 
                 if (img == null)
                 {
                     continue;
                 }
                 
-                previewList[i].Item1.Q<Button>("AssetSelectBtn").style.backgroundImage = img;
-                previewList.RemoveAt(i);
+                _previewList[i].uxml.Q<Button>("AssetSelectBtn").style.backgroundImage = img;
+                _previewList.RemoveAt(i);
             }
             
-        }).Until(() => previewList.Count == 0).Every(100);
+        }).Until(() => _previewList.Count == 0).Every(100);
     }
 
     private void OnAssetSelected(BuilderAssetData asset)
     {
         CurrentSelectedAsset = asset;
     }
+    
 }
