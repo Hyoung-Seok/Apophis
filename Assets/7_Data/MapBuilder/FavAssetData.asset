@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FavAssetData
   m_EditorClassIdentifier: Assembly-CSharp::FavAssetsData
   favAssetGuids:
-  - 547aa87adb80ea34f96ac188496a1282
-  - f7141c1378f51bb48b2775959f9e8d02
   - f7e7b236b48f06e4a8ff4f5782c9719d
   - fed404647d8097a4489cbaf455643ab0
+  - 29953dbb6a856ae449c4f17e7cf24dd8
+  - 6230741f39d41274082b9123d2f1b272
