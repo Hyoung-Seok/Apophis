@@ -61,7 +61,10 @@ public class MapBuilderEditor : Editor
         {
             var index = hit.transform.GetSiblingIndex();
 
-            if (index == _prevIndex) return;
+            if (index == _prevIndex)
+            {
+                return;
+            }
 
             var curCell = _mapBuilder.Cells[index];
             curCell.ChangeAlpha(HIGLITE_ALPHA);
