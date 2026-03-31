@@ -87,7 +87,6 @@ public class MapBuilderEditor : Editor
                 ?.CurrentSelectedAsset.Path);
 
             var obj = Instantiate(asset, pos, Quaternion.identity, _mapBuilder.LevelParent);
-            obj.SetActive(false);
         }
         
         e.Use();
@@ -116,6 +115,7 @@ public class MapBuilderEditor : Editor
         
         var obj = AssetDatabase.LoadAssetAtPath<GameObject>(asset.Path);
         _curAsset = Instantiate(obj, _mapBuilder.LevelParent);
+        _curAsset.SetActive(false);
     }
 
     private void OnEnable()

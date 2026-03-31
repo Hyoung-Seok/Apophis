@@ -26,7 +26,7 @@ public static class MapBuilderAssetLoader
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var assetName = Path.GetFileNameWithoutExtension(assetPath);
                 
-                var assetData = new BuilderAssetData(assetPath, assetName, guid);
+                var assetData = new BuilderAssetData(assetPath, assetName, guid, category);
                 _builderAssets[category].Add(assetData);
             }
         }

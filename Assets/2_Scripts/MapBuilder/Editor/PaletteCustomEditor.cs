@@ -163,7 +163,8 @@ public class PaletteCustomEditor : EditorWindow
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
             var assetName = Path.GetFileNameWithoutExtension(path);
-            var assetData = new BuilderAssetData(path, assetName, guid);
+            var category = Path.GetFileName(Path.GetDirectoryName(path));
+            var assetData = new BuilderAssetData(path, assetName, guid, category);
             
             var uxml  = CreateAssetUxml(assetData, prevList);
             ApplyFavStyle(uxml);
