@@ -25,6 +25,13 @@ public class MapBuilderEditor : Editor
 
         return _root;
     }
+    
+    private void BindingButton()
+    {
+        _root.Q<Button>("CreateGridBtn").clicked += _mapBuilder.CreateGrid;
+        _root.Q<Button>("DestroyGridBtn").clicked += _mapBuilder.DestroyGrid;
+        _root.Q<Button>("OpenPaletteBtn").clicked += PaletteCustomEditor.ShowWindow;
+    }
 
     private void OnSceneGUI()
     {
@@ -33,62 +40,58 @@ public class MapBuilderEditor : Editor
         switch (e.type)
         {
             case EventType.MouseMove:
-            {
-                if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit))
-                {
-                    var index = hit.transform.GetSiblingIndex();
-
-                    if (index != _prevIndex)
-                    {
-                        var curCell = _mapBuilder.Cells[index];
-                        curCell.ChangeAlpha(HIGLITE_ALPHA);
-                        
-                        if (_curAsset != null)
-                        {
-                            _curAsset.SetActive(true);
-                            _curAsset.transform.position = curCell.transform.position;
-                        }
-                        
-                        _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
-                        _prevIndex = index;
-                        
-                        Repaint();
-                    }
-                }
-                else
-                {
-                    if(_curAsset != null) _curAsset.SetActive(false);
-                }
-                
+                UpdateCellHighlight(e);
                 break;
-            }
-
+            
             case EventType.MouseDown:
-            {
                 if (e.button != 0 ||
                     PaletteCustomEditor.Instance?.CurrentSelectedAsset == null) return;
 
                 PlaceObject(e);
-                
                 break;
-            }
-
+            
             default:
                 return;
         }
     }
 
-    private void PlaceObject(Event e)
+    private void UpdateCellHighlight(Event e)
     {
         if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit))
         {
-            var pos = hit.transform.position;
-            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(PaletteCustomEditor.Instance
-                ?.CurrentSelectedAsset.Path);
+            var index = hit.transform.GetSiblingIndex();
 
-            var obj = Instantiate(asset, pos, Quaternion.identity, _mapBuilder.LevelParent);
+            if (index == _prevIndex) return;
+
+            var curCell = _mapBuilder.Cells[index];
+            curCell.ChangeAlpha(HIGLITE_ALPHA);
+                                    
+            if (_curAsset != null)
+            {
+                _curAsset.SetActive(true);
+                _curAsset.transform.position = curCell.transform.position;
+            }
+                                    
+            _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+            _prevIndex = index;
+                                    
+            Repaint();
+            return;
         }
         
+        if(_curAsset != null) 
+            _curAsset.SetActive(false);
+    }
+
+    private void PlaceObject(Event e)
+    {
+        if (!TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit)) return;
+        
+        var pos = hit.transform.position;
+        var asset = AssetDatabase.LoadAssetAtPath<GameObject>(PaletteCustomEditor.Instance
+            ?.CurrentSelectedAsset.Path);
+
+        var obj = Instantiate(asset, pos, Quaternion.identity, _mapBuilder.LevelParent);
         e.Use();
     }
 
@@ -96,13 +99,6 @@ public class MapBuilderEditor : Editor
     {
         var ray = HandleUtility.GUIPointToWorldRay(pos);
         return Physics.Raycast(ray, out hit, 1000f, layer);
-    }
-
-    private void BindingButton()
-    {
-        _root.Q<Button>("CreateGridBtn").clicked += _mapBuilder.CreateGrid;
-        _root.Q<Button>("DestroyGridBtn").clicked += _mapBuilder.DestroyGrid;
-        _root.Q<Button>("OpenPaletteBtn").clicked += PaletteCustomEditor.ShowWindow;
     }
 
     private void OnPaletteAssetChanged(BuilderAssetData asset)
@@ -126,5 +122,6 @@ public class MapBuilderEditor : Editor
     private void OnDisable()
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
+        _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
     }
 }
