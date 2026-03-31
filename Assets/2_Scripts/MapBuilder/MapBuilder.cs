@@ -5,6 +5,7 @@ public class MapBuilder : MonoBehaviour
 {
     public Cell[] Cells => cells;
     public LayerMask CellLayer => cellLayer;
+    public Transform LevelParent => levelParent;
     
     [SerializeField] private GameObject cellObj;
     [SerializeField] private LayerMask cellLayer;

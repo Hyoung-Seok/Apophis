@@ -7,7 +7,9 @@ using UnityEngine.UIElements;
 
 public class PaletteCustomEditor : EditorWindow
 {
+    public static PaletteCustomEditor Instance { get; private set; }
     public BuilderAssetData CurrentSelectedAsset {get; private set;}
+    public static event Action<BuilderAssetData> OnAssetSelected;
     
     [SerializeField] private VisualTreeAsset paletteUxml;
     [SerializeField] private VisualTreeAsset assetsUxml;
@@ -21,7 +23,6 @@ public class PaletteCustomEditor : EditorWindow
     private VisualElement _favoritesContainer;
     private const string FAV_DATA_PATH = "Assets/7_Data/MapBuilder/FavAssetData.asset";
     private FavAssetsData _favoritesData;
-    
     
     public static void ShowWindow()
     {
@@ -83,7 +84,7 @@ public class PaletteCustomEditor : EditorWindow
 
         uxml.name = asset.Guid;
         uxml.Q<Label>("AssetName").text = asset.Name;
-        uxml.Q<Button>("AssetSelectBtn").clicked += () => OnAssetSelected(asset);
+        uxml.Q<Button>("AssetSelectBtn").clicked += () => OnAssetButtonClicked(asset);
         uxml.Q<Button>("FavoriteBtn").clicked += () => OnFavButtonSelected(asset);
             
         previewList.Add((uxml, prefab));
@@ -113,9 +114,10 @@ public class PaletteCustomEditor : EditorWindow
         }).Until(() => previewList.Count == 0).Every(100);
     }
 
-    private void OnAssetSelected(BuilderAssetData asset)
+    private void OnAssetButtonClicked(BuilderAssetData asset)
     {
         CurrentSelectedAsset = asset;
+        OnAssetSelected?.Invoke(asset);
     }
 
     private void OnFavButtonSelected(BuilderAssetData asset)
@@ -178,5 +180,15 @@ public class PaletteCustomEditor : EditorWindow
         
         uxml.Q<Label>("AssetName").style.fontSize = 12;
         element.style.width = element.style.height = 125;
+    }
+
+    private void OnEnable()
+    {
+        Instance = this;
+    }
+
+    private void OnDisable()
+    {
+        Instance = null;
     }
 }
