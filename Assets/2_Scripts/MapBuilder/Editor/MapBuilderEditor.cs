@@ -126,17 +126,37 @@ public class MapBuilderEditor : Editor
                 break;
             
             case "Wall":
-                // 바닥이 없는 경우
-                if (_mapBuilder.IsCellHasFloor(index) == false)
-                {
-                    return;
-                }
+                if (_mapBuilder.IsCellHasFloor(index) == false) break;
+                if (_mapBuilder.AddPropData(index, assetData, _curRot) == false) break;
                 
-                // TODO : 벽 배치 로직 구현
+                PlaceWall(e, index, pos);
                 break;
         }
         
         e.Use();
+    }
+
+    private void PlaceWall(Event e, int index, Vector3 pos)
+    {
+        TryRaycast(e.mousePosition, _mapBuilder.FloorLayer, out var hit);
+        
+        // 1. 피봇 오브젝트 생성
+        var index2D = _mapBuilder.Convert1DIndexTo2D(index);
+        var pivot = new GameObject($"Wall({index2D.x}, {index2D.y})");
+        pivot.transform.position = new Vector3(pos.x, hit.point.y, pos.z);
+        pivot.transform.parent = _mapBuilder.LevelParent;
+                
+        // 2. 벽 프리팹을 피봇 자식으로 생성
+        var wall = Instantiate(_curAsset, pivot.transform);
+        wall.transform.rotation = Quaternion.identity;
+        var bounds = wall.GetComponentInChildren<Renderer>().bounds;
+                
+        // 3. 오프셋 계산
+        var wallHeight = bounds.size.y;
+        var wallDepth = bounds.extents.z;
+        wall.transform.localPosition = new Vector3(0, wallHeight / 2f, _mapBuilder.CellSize / 2f + wallDepth);
+                
+        pivot.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
     }
 
     private void RotationFloorOrGroundAsset(Event e)
@@ -174,6 +194,6 @@ public class MapBuilderEditor : Editor
     private void OnDisable()
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
-        _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+        _mapBuilder.Cells[_prevIndex]?.ChangeAlpha(ORIGIN_ALPHA);
     }
 }

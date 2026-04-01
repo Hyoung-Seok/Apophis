@@ -4,6 +4,7 @@ using UnityEngine;
 public class MapBuilder : MonoBehaviour
 {
     public Cell[] Cells => cells;
+    public float CellSize => cellSize;
     public LayerMask CellLayer => cellLayer;
     public LayerMask FloorLayer => floorLayer;
     public Transform LevelParent => levelParent;
@@ -95,6 +96,14 @@ public class MapBuilder : MonoBehaviour
     public bool IsCellHasFloor(int index)
     {
         return !string.IsNullOrEmpty(cellPropData[index].GroundPath);
+    }
+
+    public (int x, int y) Convert1DIndexTo2D(int index)
+    {
+        var y = index / gridSize.x;
+        var x = index % gridSize.x;
+        
+        return (x, y);
     }
 
     private void InitCellObject()
