@@ -11,6 +11,7 @@ public class MapBuilderEditor : Editor
     private MapBuilder _mapBuilder;
     private VisualElement _root;
     private GameObject _curAsset;
+    private ERot90 _curRot = ERot90.D0;
 
     private int _prevIndex = 0;
     private const float ORIGIN_ALPHA = 0.3f;
@@ -88,13 +89,43 @@ public class MapBuilderEditor : Editor
 
     private void PlaceObject(Event e)
     {
-        if (!TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit)) return;
+        if (!TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit))
+        {
+            return;
+        }
         
-        var pos = hit.transform.position;
-        var asset = AssetDatabase.LoadAssetAtPath<GameObject>(PaletteCustomEditor.Instance
-            ?.CurrentSelectedAsset.Path);
+        var assetData = PaletteCustomEditor.Instance?.CurrentSelectedAsset;
+        if (assetData == null)
+        {
+            return;
+        }
 
-        var obj = Instantiate(asset, pos, Quaternion.identity, _mapBuilder.LevelParent);
+        var index = hit.transform.GetSiblingIndex();
+        var pos = hit.transform.position;
+        
+        switch (assetData.Category)
+        {
+            case "Floor":
+                // 이미 배치된 바닥이 있는 경우
+                if (_mapBuilder.AddPropData(index, assetData, _curRot) == false)
+                {
+                    break;
+                }
+
+                Instantiate(_curAsset, pos, _curAsset.transform.rotation, _mapBuilder.LevelParent);
+                break;
+            
+            case "Wall":
+                // 바닥이 없는 경우
+                if (_mapBuilder.IsCellHasFloor(index) == false)
+                {
+                    return;
+                }
+                
+                // TODO : 벽 배치 로직 구현
+                break;
+        }
+        
         e.Use();
     }
 

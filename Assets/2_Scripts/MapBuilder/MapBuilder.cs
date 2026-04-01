@@ -5,10 +5,12 @@ public class MapBuilder : MonoBehaviour
 {
     public Cell[] Cells => cells;
     public LayerMask CellLayer => cellLayer;
+    public LayerMask FloorLayer => floorLayer;
     public Transform LevelParent => levelParent;
     
     [SerializeField] private GameObject cellObj;
     [SerializeField] private LayerMask cellLayer;
+    [SerializeField] private LayerMask floorLayer;
     [SerializeField] private Transform levelParent;
 
     [SerializeField] private Vector2Int gridSize;
@@ -16,6 +18,7 @@ public class MapBuilder : MonoBehaviour
     [SerializeField] private float cellInterval;
 
     [SerializeField, HideInInspector] private Cell[] cells;
+    [SerializeField, HideInInspector] private CellPropData[] cellPropData;
     [SerializeField, HideInInspector] private GameObject gridParent;
     
     private GameObject _cell;
@@ -27,6 +30,7 @@ public class MapBuilder : MonoBehaviour
         InitCellObject();
         
         cells = new Cell[gridSize.x * gridSize.y];
+        cellPropData = new CellPropData[cells.Length];
 
         var center = transform.position;
         var startX = center.x - (gridSize.x - 1) * 0.5f * cellSize;
@@ -55,6 +59,42 @@ public class MapBuilder : MonoBehaviour
         if (gridParent ==null) return;
 
         DestroyImmediate(gridParent);
+    }
+
+    public bool AddPropData(int index, BuilderAssetData assetData, ERot90 rot)
+    {
+        switch (assetData.Category)
+        {
+            case "Floor":
+                if (!string.IsNullOrEmpty(cellPropData[index].GroundPath))
+                {
+                    return false;
+                }
+                
+                cellPropData[index].GroundPath = assetData.Path;
+                cellPropData[index].GroundRot = rot;
+                break;
+            
+            case "Wall":
+                // 만약 해당하는 rot에 이미 path가 등록되어 있다면 리턴
+                if (!string.IsNullOrEmpty(cellPropData[index].WallPaths[(int)rot]))
+                {
+                    return false;
+                }
+
+                cellPropData[index].WallPaths[(int)rot] = assetData.Path;
+                break;
+            
+            default:
+                return false;
+        }
+
+        return true;
+    }
+
+    public bool IsCellHasFloor(int index)
+    {
+        return !string.IsNullOrEmpty(cellPropData[index].GroundPath);
     }
 
     private void InitCellObject()

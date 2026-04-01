@@ -2470,6 +2470,9 @@ MonoBehaviour:
   cellLayer:
     serializedVersion: 2
     m_Bits: 4096
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 8192
   levelParent: {fileID: 1023604339}
   gridSize: {x: 10, y: 10}
   cellSize: 1
@@ -2575,6 +2578,7 @@ MonoBehaviour:
   - {fileID: 320747377}
   - {fileID: 1783059349}
   - {fileID: 893613644}
+  cellPropData: []
   gridParent: {fileID: 1482032430}
 --- !u!1 &346141461
 GameObject:
