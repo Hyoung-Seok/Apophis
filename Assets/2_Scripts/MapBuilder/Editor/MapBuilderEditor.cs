@@ -51,6 +51,16 @@ public class MapBuilderEditor : Editor
                 PlaceObject(e);
                 break;
             
+            case EventType.ScrollWheel:
+                var category = PaletteCustomEditor.Instance?.CurrentSelectedAsset?.Category;
+
+                if (category == "Floor" || category == "Wall")
+                {
+                    RotationFloorOrGroundAsset(e);
+                    e.Use();
+                }
+                break;
+            
             default:
                 return;
         }
@@ -127,6 +137,14 @@ public class MapBuilderEditor : Editor
         }
         
         e.Use();
+    }
+
+    private void RotationFloorOrGroundAsset(Event e)
+    {
+        var dir = e.delta.y > 0 ? 1 : -1;
+        _curRot = (ERot90)(((int)_curRot + dir + 4) % 4);
+        
+        _curAsset.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
     }
 
     private bool TryRaycast(Vector2 pos, LayerMask layer, out RaycastHit hit)
