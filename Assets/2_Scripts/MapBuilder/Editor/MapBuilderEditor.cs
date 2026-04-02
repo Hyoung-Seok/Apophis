@@ -10,12 +10,15 @@ public class MapBuilderEditor : Editor
     
     private MapBuilder _mapBuilder;
     private VisualElement _root;
-    private GameObject _curAsset;
+    
+    private GameObject _selectedObj;
+    private string _curCategory;
+    private WallPlaceData _wallPlaceData;
     private ERot90 _curRot = ERot90.D0;
 
     private int _prevIndex = 0;
     private const float ORIGIN_ALPHA = 0.3f;
-    private const float HIGLITE_ALPHA = 1f;
+    private const float HIGHLIGHT_ALPHA = 1f;
     
     public override VisualElement CreateInspectorGUI()
     {
@@ -52,9 +55,7 @@ public class MapBuilderEditor : Editor
                 break;
             
             case EventType.ScrollWheel:
-                var category = PaletteCustomEditor.Instance?.CurrentSelectedAsset?.Category;
-
-                if (category == "Floor" || category == "Wall")
+                if (_curCategory == "Floor" || _curCategory == "Wall")
                 {
                     RotationFloorOrGroundAsset(e);
                     e.Use();
@@ -78,13 +79,9 @@ public class MapBuilderEditor : Editor
             }
 
             var curCell = _mapBuilder.Cells[index];
-            curCell.ChangeAlpha(HIGLITE_ALPHA);
+            curCell.ChangeAlpha(HIGHLIGHT_ALPHA);
                                     
-            if (_curAsset != null)
-            {
-                _curAsset.SetActive(true);
-                _curAsset.transform.position = curCell.transform.position;
-            }
+            SnapPreviewAssetToCell(e, curCell, hit);
                                     
             _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
             _prevIndex = index;
@@ -93,8 +90,52 @@ public class MapBuilderEditor : Editor
             return;
         }
         
-        if(_curAsset != null) 
-            _curAsset.SetActive(false);
+        if(_selectedObj != null) 
+            _selectedObj.SetActive(false);
+    }
+    
+    private void SnapPreviewAssetToCell(Event e, Cell cell, RaycastHit cellHit)
+    {
+        if (_selectedObj == null) return;
+        
+        var pos = cellHit.transform.position;
+
+        switch (_curCategory)
+        {
+            case "Floor":
+                _selectedObj.SetActive(true);
+                _selectedObj.transform.position = cell.transform.position;
+                break;
+            
+            case "Wall":
+                _selectedObj.SetActive(false);
+                if(TryRaycast(e.mousePosition, _mapBuilder.FloorLayer, out var floorHit) == false) return;
+                
+                if (_wallPlaceData == null)
+                {
+                    _wallPlaceData = new WallPlaceData();
+                    
+                    // 1. 피봇 오브젝트 생성
+                    _wallPlaceData.Pivot = new GameObject("WallPivot");
+                    _wallPlaceData.Pivot.transform.parent = _mapBuilder.LevelParent;
+                    
+                    // 2. 벽 생성
+                    _wallPlaceData.Wall = Instantiate(_selectedObj, _wallPlaceData.Pivot.transform);
+                    _wallPlaceData.Wall.transform.rotation = Quaternion.identity;
+                    var bound= _wallPlaceData.Wall.GetComponentInChildren<Renderer>().bounds;
+                    
+                    // 3. 오프셋 계산
+                    var wallHeight = bound.size.y;
+                    var wallDepth = bound.extents.z;
+                    _wallPlaceData.Wall.transform.localPosition 
+                        = new Vector3(0, wallHeight / 2f, _mapBuilder.CellSize / 2f + wallDepth);
+                }
+                
+                _wallPlaceData.Wall.SetActive(true);
+                _wallPlaceData.Pivot.transform.position = new Vector3(pos.x, floorHit.point.y, pos.z);
+                _wallPlaceData.Pivot.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
+                break;
+        }
     }
 
     private void PlaceObject(Event e)
@@ -104,12 +145,7 @@ public class MapBuilderEditor : Editor
             return;
         }
         
-        var assetData = PaletteCustomEditor.Instance?.CurrentSelectedAsset;
-        if (assetData == null)
-        {
-            return;
-        }
-
+        var assetData = PaletteCustomEditor.Instance.CurrentSelectedAsset;
         var index = hit.transform.GetSiblingIndex();
         var pos = hit.transform.position;
         
@@ -122,49 +158,38 @@ public class MapBuilderEditor : Editor
                     break;
                 }
 
-                Instantiate(_curAsset, pos, _curAsset.transform.rotation, _mapBuilder.LevelParent);
+                Instantiate(_selectedObj, pos, _selectedObj.transform.rotation, _mapBuilder.LevelParent);
                 break;
             
             case "Wall":
                 if (_mapBuilder.IsCellHasFloor(index) == false) break;
                 if (_mapBuilder.AddPropData(index, assetData, _curRot) == false) break;
-                
-                PlaceWall(e, index, pos);
+
+                var ts = _wallPlaceData.Pivot.transform;
+                Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
                 break;
         }
         
         e.Use();
     }
-
-    private void PlaceWall(Event e, int index, Vector3 pos)
-    {
-        TryRaycast(e.mousePosition, _mapBuilder.FloorLayer, out var hit);
-        
-        // 1. 피봇 오브젝트 생성
-        var index2D = _mapBuilder.Convert1DIndexTo2D(index);
-        var pivot = new GameObject($"Wall({index2D.x}, {index2D.y})");
-        pivot.transform.position = new Vector3(pos.x, hit.point.y, pos.z);
-        pivot.transform.parent = _mapBuilder.LevelParent;
-                
-        // 2. 벽 프리팹을 피봇 자식으로 생성
-        var wall = Instantiate(_curAsset, pivot.transform);
-        wall.transform.rotation = Quaternion.identity;
-        var bounds = wall.GetComponentInChildren<Renderer>().bounds;
-                
-        // 3. 오프셋 계산
-        var wallHeight = bounds.size.y;
-        var wallDepth = bounds.extents.z;
-        wall.transform.localPosition = new Vector3(0, wallHeight / 2f, _mapBuilder.CellSize / 2f + wallDepth);
-                
-        pivot.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
-    }
+    
 
     private void RotationFloorOrGroundAsset(Event e)
     {
         var dir = e.delta.y > 0 ? 1 : -1;
         _curRot = (ERot90)(((int)_curRot + dir + 4) % 4);
         
-        _curAsset.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
+        if (_curCategory == "Floor")
+        {
+            _selectedObj.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
+        }
+        else
+        {
+            if (_wallPlaceData != null)
+            {
+                _wallPlaceData.Pivot.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
+            }
+        }
     }
 
     private bool TryRaycast(Vector2 pos, LayerMask layer, out RaycastHit hit)
@@ -175,15 +200,23 @@ public class MapBuilderEditor : Editor
 
     private void OnPaletteAssetChanged(BuilderAssetData asset)
     {
-        if (_curAsset != null)
+        if (_selectedObj != null)
         {
-            DestroyImmediate(_curAsset);
-            _curAsset = null;
+            DestroyImmediate(_selectedObj);
+            _selectedObj = null;
+        }
+
+        if (_wallPlaceData != null)
+        {
+            DestroyImmediate(_wallPlaceData.Pivot);
+            _wallPlaceData = null;
         }
         
         var obj = AssetDatabase.LoadAssetAtPath<GameObject>(asset.Path);
-        _curAsset = Instantiate(obj, _mapBuilder.LevelParent);
-        _curAsset.SetActive(false);
+        
+        _curCategory = asset.Category;
+        _selectedObj = Instantiate(obj, _mapBuilder.LevelParent);
+        _selectedObj.SetActive(false);
     }
 
     private void OnEnable()
@@ -195,5 +228,23 @@ public class MapBuilderEditor : Editor
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
         _mapBuilder.Cells[_prevIndex]?.ChangeAlpha(ORIGIN_ALPHA);
+        
+        if (_selectedObj != null)
+        {
+            DestroyImmediate(_selectedObj);
+            _selectedObj = null;
+        }
+
+        if (_wallPlaceData != null)
+        {
+            DestroyImmediate(_wallPlaceData.Pivot);
+            _wallPlaceData = null;
+        }
     }
+}
+
+public class WallPlaceData
+{
+    public GameObject Pivot;
+    public GameObject Wall;
 }
