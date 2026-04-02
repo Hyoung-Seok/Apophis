@@ -35,6 +35,8 @@ public class MapBuilderEditor : Editor
         _root.Q<Button>("CreateGridBtn").clicked += _mapBuilder.CreateGrid;
         _root.Q<Button>("DestroyGridBtn").clicked += _mapBuilder.DestroyGrid;
         _root.Q<Button>("OpenPaletteBtn").clicked += PaletteCustomEditor.ShowWindow;
+
+        _root.Q<Button>("DeleteLevel").clicked += OnClickDeleteLevelDataBtn;
     }
 
     private void OnSceneGUI()
@@ -147,6 +149,7 @@ public class MapBuilderEditor : Editor
         
         var assetData = PaletteCustomEditor.Instance.CurrentSelectedAsset;
         var index = hit.transform.GetSiblingIndex();
+        var index2D = _mapBuilder.Convert1DIndexTo2D(index);
         var pos = hit.transform.position;
         
         switch (assetData.Category)
@@ -158,15 +161,17 @@ public class MapBuilderEditor : Editor
                     break;
                 }
 
-                Instantiate(_selectedObj, pos, _selectedObj.transform.rotation, _mapBuilder.LevelParent);
+                var floorObj = Instantiate(_selectedObj, pos, _selectedObj.transform.rotation, _mapBuilder.LevelParent);
+                floorObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
                 break;
-            
+
             case "Wall":
                 if (_mapBuilder.IsCellHasFloor(index) == false) break;
                 if (_mapBuilder.AddPropData(index, assetData, _curRot) == false) break;
 
                 var ts = _wallPlaceData.Pivot.transform;
-                Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
+                var wallObj = Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
+                wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
                 break;
         }
         
@@ -217,6 +222,16 @@ public class MapBuilderEditor : Editor
         _curCategory = asset.Category;
         _selectedObj = Instantiate(obj, _mapBuilder.LevelParent);
         _selectedObj.SetActive(false);
+    }
+
+    private void OnClickDeleteLevelDataBtn()
+    {
+        PopupCustomWindow.ShowWindow();
+
+        var popUp = EditorWindow.GetWindow<PopupCustomWindow>();
+        
+        popUp.SetMessage("현재 배치된 모든 에셋을 삭제하시겠습니까?");
+        popUp.AddAcceptBtnAction(_mapBuilder.DeleteLevelData);
     }
 
     private void OnEnable()

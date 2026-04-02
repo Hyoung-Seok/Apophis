@@ -106,6 +106,21 @@ public class MapBuilder : MonoBehaviour
         return (x, y);
     }
 
+    public void SaveLevelData()
+    {
+        
+    }
+
+    public void DeleteLevelData()
+    {
+        cellPropData = new CellPropData[cells.Length];
+
+        for (var i = levelParent.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(levelParent.GetChild(i).gameObject);
+        }
+    }
+
     private void InitCellObject()
     {
         _cell = Instantiate(cellObj, transform);
