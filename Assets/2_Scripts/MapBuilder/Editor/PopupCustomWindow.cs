@@ -40,6 +40,7 @@ public class PopupCustomWindow : EditorWindow
     public void AddAcceptBtnAction(Action action)
     {
         _acceptBtn.clicked += action;
+        _acceptBtn.clicked += Close;
     }
     
 }
