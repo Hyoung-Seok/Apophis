@@ -59,25 +59,19 @@ public class MapBuilderEditor : Editor
                 break;
             
             case EventType.ScrollWheel:
-                if (_curCategory == "Floor" || _curCategory == "Wall")
+                if (_selectedObj == null) return;
+                
+                if (IsSnapCellCategory == true)
                 {
-                    RotationFloorOrWallAsset(e);
+                    RotateFloorOrWallAsset(e);
+                }
+                else if (e.control)
+                {
+                    AdjustFreeAssetHeight(e);
                 }
                 else
                 {
-                    if (e.control)
-                    {
-                        var dir = e.delta.y > 0 ? -YPOS_STEP : YPOS_STEP;
-                        var pos = _selectedObj.transform.position;
-
-                        pos.y += dir;
-                        _selectedObj.transform.position = pos;
-                    }
-                    else
-                    {
-                        var dir = e.delta.y > 0 ? -ROTATION_STEP : ROTATION_STEP;
-                        _selectedObj.transform.Rotate(0f, dir, 0f);
-                    }
+                    RotateFreeAsset(e);
                 }
                 
                 e.Use();
@@ -96,10 +90,10 @@ public class MapBuilderEditor : Editor
             return;
         }
 
-        if (_curCategory != "Floor" && _curCategory != "Wall"
-            && _selectedObj != null)
+        if (IsSnapCellCategory == false && _selectedObj != null)
         {
             UpdateFreeAssetPreview(e);
+            Repaint();
         }
 
         var index = hit.transform.GetSiblingIndex();
@@ -180,60 +174,64 @@ public class MapBuilderEditor : Editor
         
         var assetData = PaletteCustomEditor.Instance.CurrentSelectedAsset;
         var index = hit.transform.GetSiblingIndex();
-        var index2D = _mapBuilder.Convert1DIndexTo2D(index);
         var pos = hit.transform.position;
-        var groupIndex = 0;
         
-        switch (assetData.Category)
+        var groupIndex = Undo.GetCurrentGroup();
+        Undo.RegisterCompleteObjectUndo(_mapBuilder, $"Place_{assetData.Category}");
+
+        var placed = assetData.Category switch
         {
-            case "Floor":
-                groupIndex = Undo.GetCurrentGroup();
-                Undo.RegisterCompleteObjectUndo(_mapBuilder, "PlaceFloor");
-                
-                if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false)
-                {
-                    break;
-                }
-                
-                var floorObj = Instantiate(_selectedObj, pos, _selectedObj.transform.rotation, _mapBuilder.LevelParent);
-                floorObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
-                
-                Undo.RegisterCreatedObjectUndo(floorObj, "PlaceFloor");
-                Undo.CollapseUndoOperations(groupIndex);
-                break;
+            "Floor" => PlaceFloor(index, assetData, pos),
+            "Wall" => PlaceWall(index, assetData),
+            _ => PlaceFreeAsset(assetData)
+        };
 
-            case "Wall":
-                groupIndex = Undo.GetCurrentGroup();
-                Undo.RegisterCompleteObjectUndo(_mapBuilder, "PlaceWall");
-                
-                if (_mapBuilder.IsCellHasFloor(index) == false) break;
-                if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false) break;
-
-                var ts = _wallPlaceData.Pivot.transform;
-                var wallObj = Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
-                wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
-                
-                Undo.RegisterCreatedObjectUndo(wallObj, "PlaceWall");
-                Undo.CollapseUndoOperations(groupIndex);
-                break;
-            
-            default:
-                groupIndex = Undo.GetCurrentGroup();
-                Undo.RegisterCompleteObjectUndo(_mapBuilder, "PlaceObject");
-                
-                _mapBuilder.AddFreeAssetData(assetData.Path, _selectedObj.transform.position, _selectedObj.transform.rotation.y);
-                var obj = Instantiate(_selectedObj, _selectedObj.transform.position, _selectedObj.transform.rotation,
-                    _mapBuilder.LevelParent);
-                
-                Undo.RegisterCreatedObjectUndo(obj, "PlaceObject");
-                Undo.CollapseUndoOperations(groupIndex);
-                break;
+        if (placed != null)
+        {
+            Undo.RegisterCreatedObjectUndo(placed, $"Place_{assetData.Category}");
+            Undo.CollapseUndoOperations(groupIndex);
         }
         
         e.Use();
     }
+
+    private GameObject PlaceFloor(int index, BuilderAssetData assetData, Vector3 pos)
+    {
+        if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false)
+        {
+            return null;
+        }
+                
+        var floorObj = Instantiate(_selectedObj, pos, _selectedObj.transform.rotation, _mapBuilder.LevelParent);
+        var index2D =  _mapBuilder.Convert1DIndexTo2D(index);
+        floorObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
+
+        return floorObj;
+    }
+
+    private GameObject PlaceWall(int index, BuilderAssetData assetData)
+    {
+        if (_mapBuilder.IsCellHasFloor(index) == false) return null;
+        if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false) return null;
+
+        var ts = _wallPlaceData.Pivot.transform;
+        var wallObj = Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
+        var index2D = _mapBuilder.Convert1DIndexTo2D(index);
+        
+        wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
+        return wallObj;
+    }
+
+    private GameObject PlaceFreeAsset(BuilderAssetData assetData)
+    {
+        _mapBuilder.AddFreeAssetData(assetData.Path, _selectedObj.transform.position, _selectedObj.transform.rotation.y);
+        var obj = Instantiate(_selectedObj, _selectedObj.transform.position, _selectedObj.transform.rotation,
+            _mapBuilder.LevelParent);
+
+        return obj;
+    }
     
-    private void RotationFloorOrWallAsset(Event e)
+    private void RotateFloorOrWallAsset(Event e)
     {
         var dir = e.delta.y > 0 ? 1 : -1;
         _curRot = (ERot90)(((int)_curRot + dir + 4) % 4);
@@ -249,6 +247,21 @@ public class MapBuilderEditor : Editor
                 _wallPlaceData.Pivot.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
             }
         }
+    }
+
+    private void RotateFreeAsset(Event e)
+    {
+        var dir = e.delta.y > 0 ? -ROTATION_STEP : ROTATION_STEP;
+        _selectedObj.transform.Rotate(0f, dir, 0f);
+    }
+
+    private void AdjustFreeAssetHeight(Event e)
+    {
+        var dir = e.delta.y > 0 ? -YPOS_STEP : YPOS_STEP;
+        var pos = _selectedObj.transform.position;
+
+        pos.y += dir;
+        _selectedObj.transform.position = pos;
     }
 
     private bool TryRaycast(Vector2 pos, LayerMask layer, out RaycastHit hit)
@@ -287,6 +300,8 @@ public class MapBuilderEditor : Editor
         popUp.SetMessage("현재 배치된 모든 에셋을 삭제하시겠습니까?");
         popUp.AddAcceptBtnAction(_mapBuilder.DeleteLevelData);
     }
+    
+    private bool IsSnapCellCategory => _curCategory == "Floor" || _curCategory == "Wall";
     
     private void OnEnable()
     {
