@@ -4,8 +4,8 @@ using UnityEngine;
 [Serializable]
 public class CellPropData
 {
-    public string GroundPath;
-    public ERot90 GroundRot;
+    public string FloorPath;
+    public ERot90 FloorRot;
     public string[] WallPaths = new string[4];
 }
 

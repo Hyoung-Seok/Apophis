@@ -62,22 +62,21 @@ public class MapBuilder : MonoBehaviour
         DestroyImmediate(gridParent);
     }
 
-    public bool AddPropData(int index, BuilderAssetData assetData, ERot90 rot)
+    public bool TryAddPropData(int index, BuilderAssetData assetData, ERot90 rot)
     {
         switch (assetData.Category)
         {
             case "Floor":
-                if (!string.IsNullOrEmpty(cellPropData[index].GroundPath))
+                if (!string.IsNullOrEmpty(cellPropData[index].FloorPath))
                 {
                     return false;
                 }
                 
-                cellPropData[index].GroundPath = assetData.Path;
-                cellPropData[index].GroundRot = rot;
+                cellPropData[index].FloorPath = assetData.Path;
+                cellPropData[index].FloorRot = rot;
                 break;
             
             case "Wall":
-                // 만약 해당하는 rot에 이미 path가 등록되어 있다면 리턴
                 if (!string.IsNullOrEmpty(cellPropData[index].WallPaths[(int)rot]))
                 {
                     return false;
@@ -95,7 +94,7 @@ public class MapBuilder : MonoBehaviour
 
     public bool IsCellHasFloor(int index)
     {
-        return !string.IsNullOrEmpty(cellPropData[index].GroundPath);
+        return !string.IsNullOrEmpty(cellPropData[index].FloorPath);
     }
 
     public (int x, int y) Convert1DIndexTo2D(int index)

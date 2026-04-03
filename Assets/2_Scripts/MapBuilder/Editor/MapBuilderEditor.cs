@@ -156,7 +156,7 @@ public class MapBuilderEditor : Editor
         {
             case "Floor":
                 // 이미 배치된 바닥이 있는 경우
-                if (_mapBuilder.AddPropData(index, assetData, _curRot) == false)
+                if (_mapBuilder.TryAddPropData(index, assetData, _curRot) == false)
                 {
                     break;
                 }
@@ -167,7 +167,7 @@ public class MapBuilderEditor : Editor
 
             case "Wall":
                 if (_mapBuilder.IsCellHasFloor(index) == false) break;
-                if (_mapBuilder.AddPropData(index, assetData, _curRot) == false) break;
+                if (_mapBuilder.TryAddPropData(index, assetData, _curRot) == false) break;
 
                 var ts = _wallPlaceData.Pivot.transform;
                 var wallObj = Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
