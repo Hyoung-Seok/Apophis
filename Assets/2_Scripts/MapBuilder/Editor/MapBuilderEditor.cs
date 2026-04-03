@@ -15,11 +15,12 @@ public class MapBuilderEditor : Editor
     private string _curCategory;
     private WallPlaceData _wallPlaceData;
     private ERot90 _curRot = ERot90.D0;
-    private float _curYPos = 1f;
 
     private int _prevIndex = 0;
     private const float ORIGIN_ALPHA = 0.3f;
     private const float HIGHLIGHT_ALPHA = 1f;
+    private const float ROTATION_STEP = 5f;
+    private const float YPOS_STEP = 0.1f;
     
     public override VisualElement CreateInspectorGUI()
     {
@@ -60,9 +61,26 @@ public class MapBuilderEditor : Editor
             case EventType.ScrollWheel:
                 if (_curCategory == "Floor" || _curCategory == "Wall")
                 {
-                    RotationFloorOrGroundAsset(e);
-                    e.Use();
+                    RotationFloorOrWallAsset(e);
                 }
+                else
+                {
+                    if (e.control)
+                    {
+                        var dir = e.delta.y > 0 ? -YPOS_STEP : YPOS_STEP;
+                        var pos = _selectedObj.transform.position;
+
+                        pos.y += dir;
+                        _selectedObj.transform.position = pos;
+                    }
+                    else
+                    {
+                        var dir = e.delta.y > 0 ? -ROTATION_STEP : ROTATION_STEP;
+                        _selectedObj.transform.Rotate(0f, dir, 0f);
+                    }
+                }
+                
+                e.Use();
                 break;
             
             default:
@@ -149,7 +167,7 @@ public class MapBuilderEditor : Editor
         }
         
         _selectedObj.SetActive(true);
-        var objPos = new Vector3(hit.point.x, _curYPos, hit.point.z);
+        var objPos = new Vector3(hit.point.x, _selectedObj.transform.position.y, hit.point.z);
         _selectedObj.transform.position = objPos;
     }
 
@@ -197,7 +215,7 @@ public class MapBuilderEditor : Editor
     }
     
 
-    private void RotationFloorOrGroundAsset(Event e)
+    private void RotationFloorOrWallAsset(Event e)
     {
         var dir = e.delta.y > 0 ? 1 : -1;
         _curRot = (ERot90)(((int)_curRot + dir + 4) % 4);
