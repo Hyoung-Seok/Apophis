@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class FreeAssetsData
+public class FreeAssetData
 {
     public string AssetPath;
     public Vector3 Position;

@@ -15,6 +15,7 @@ public class MapBuilderEditor : Editor
     private string _curCategory;
     private WallPlaceData _wallPlaceData;
     private ERot90 _curRot = ERot90.D0;
+    private float _curYPos = 1f;
 
     private int _prevIndex = 0;
     private const float ORIGIN_ALPHA = 0.3f;
@@ -71,29 +72,28 @@ public class MapBuilderEditor : Editor
 
     private void UpdateCellHighlight(Event e)
     {
-        if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit))
+        if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit) == false)
         {
-            var index = hit.transform.GetSiblingIndex();
-
-            if (index == _prevIndex)
-            {
-                return;
-            }
-
-            var curCell = _mapBuilder.Cells[index];
-            curCell.ChangeAlpha(HIGHLIGHT_ALPHA);
-                                    
-            SnapPreviewAssetToCell(e, curCell, hit);
-                                    
-            _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
-            _prevIndex = index;
-                                    
-            Repaint();
+            if(_selectedObj != null) _selectedObj.SetActive(false);
             return;
         }
+
+        if (_curCategory != "Floor" && _curCategory != "Wall"
+            && _selectedObj != null)
+        {
+            UpdateFreeAssetPreview(e);
+        }
+
+        var index = hit.transform.GetSiblingIndex();
+        if (index == _prevIndex) return;
         
-        if(_selectedObj != null) 
-            _selectedObj.SetActive(false);
+        var curCell = _mapBuilder.Cells[index];
+        curCell.ChangeAlpha(HIGHLIGHT_ALPHA);
+        SnapPreviewAssetToCell(e, curCell, hit);
+                                    
+        _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+        _prevIndex = index;
+        Repaint();
     }
     
     private void SnapPreviewAssetToCell(Event e, Cell cell, RaycastHit cellHit)
@@ -140,6 +140,19 @@ public class MapBuilderEditor : Editor
         }
     }
 
+    private void UpdateFreeAssetPreview(Event e)
+    {
+        if (TryRaycast(e.mousePosition, _mapBuilder.FloorLayer, out var hit) == false)
+        {
+            _selectedObj.SetActive(false);
+            return;
+        }
+        
+        _selectedObj.SetActive(true);
+        var objPos = new Vector3(hit.point.x, _curYPos, hit.point.z);
+        _selectedObj.transform.position = objPos;
+    }
+
     private void PlaceObject(Event e)
     {
         if (!TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit))
@@ -155,8 +168,7 @@ public class MapBuilderEditor : Editor
         switch (assetData.Category)
         {
             case "Floor":
-                // 이미 배치된 바닥이 있는 경우
-                if (_mapBuilder.TryAddPropData(index, assetData, _curRot) == false)
+                if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false)
                 {
                     break;
                 }
@@ -167,11 +179,17 @@ public class MapBuilderEditor : Editor
 
             case "Wall":
                 if (_mapBuilder.IsCellHasFloor(index) == false) break;
-                if (_mapBuilder.TryAddPropData(index, assetData, _curRot) == false) break;
+                if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false) break;
 
                 var ts = _wallPlaceData.Pivot.transform;
                 var wallObj = Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
                 wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
+                break;
+            
+            default:
+                _mapBuilder.AddFreeAssetData(assetData.Path, _selectedObj.transform.position, _selectedObj.transform.rotation.y);
+                Instantiate(_selectedObj, _selectedObj.transform.position, _selectedObj.transform.rotation,
+                    _mapBuilder.LevelParent);
                 break;
         }
         

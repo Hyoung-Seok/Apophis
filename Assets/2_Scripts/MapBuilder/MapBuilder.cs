@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
@@ -20,6 +21,7 @@ public class MapBuilder : MonoBehaviour
 
     [SerializeField, HideInInspector] private Cell[] cells;
     [SerializeField, HideInInspector] private CellAssetsData[] cellAssetData;
+    [SerializeField, HideInInspector] private List<FreeAssetData> freeAssetsData = new();
     [SerializeField, HideInInspector] private GameObject gridParent;
     
     private GameObject _cell;
@@ -62,7 +64,7 @@ public class MapBuilder : MonoBehaviour
         DestroyImmediate(gridParent);
     }
 
-    public bool TryAddPropData(int index, BuilderAssetData assetData, ERot90 rot)
+    public bool TryAddAssetData(int index, BuilderAssetData assetData, ERot90 rot)
     {
         switch (assetData.Category)
         {
@@ -84,12 +86,18 @@ public class MapBuilder : MonoBehaviour
 
                 cellAssetData[index].WallPaths[(int)rot] = assetData.Path;
                 break;
-            
-            default:
-                return false;
         }
 
         return true;
+    }
+
+    public void AddFreeAssetData(string path, Vector3 pos, float yRot)
+    {
+        var freeAssetData = new FreeAssetData();
+        
+        freeAssetData.AssetPath = path;
+        freeAssetData.Position = pos;
+        freeAssetData.YRotation = yRot;
     }
 
     public bool IsCellHasFloor(int index)
@@ -113,6 +121,7 @@ public class MapBuilder : MonoBehaviour
     public void DeleteLevelData()
     {
         cellAssetData = new CellAssetsData[cells.Length];
+        freeAssetsData.Clear();
 
         for (var i = levelParent.childCount - 1; i >= 0; i--)
         {
