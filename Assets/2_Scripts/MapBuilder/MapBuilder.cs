@@ -19,7 +19,7 @@ public class MapBuilder : MonoBehaviour
     [SerializeField] private float cellInterval;
 
     [SerializeField, HideInInspector] private Cell[] cells;
-    [SerializeField, HideInInspector] private CellPropData[] cellPropData;
+    [SerializeField, HideInInspector] private CellAssetsData[] cellAssetData;
     [SerializeField, HideInInspector] private GameObject gridParent;
     
     private GameObject _cell;
@@ -31,7 +31,7 @@ public class MapBuilder : MonoBehaviour
         InitCellObject();
         
         cells = new Cell[gridSize.x * gridSize.y];
-        cellPropData = new CellPropData[cells.Length];
+        cellAssetData = new CellAssetsData[cells.Length];
 
         var center = transform.position;
         var startX = center.x - (gridSize.x - 1) * 0.5f * cellSize;
@@ -67,22 +67,22 @@ public class MapBuilder : MonoBehaviour
         switch (assetData.Category)
         {
             case "Floor":
-                if (!string.IsNullOrEmpty(cellPropData[index].FloorPath))
+                if (!string.IsNullOrEmpty(cellAssetData[index].FloorPath))
                 {
                     return false;
                 }
                 
-                cellPropData[index].FloorPath = assetData.Path;
-                cellPropData[index].FloorRot = rot;
+                cellAssetData[index].FloorPath = assetData.Path;
+                cellAssetData[index].FloorRot = rot;
                 break;
             
             case "Wall":
-                if (!string.IsNullOrEmpty(cellPropData[index].WallPaths[(int)rot]))
+                if (!string.IsNullOrEmpty(cellAssetData[index].WallPaths[(int)rot]))
                 {
                     return false;
                 }
 
-                cellPropData[index].WallPaths[(int)rot] = assetData.Path;
+                cellAssetData[index].WallPaths[(int)rot] = assetData.Path;
                 break;
             
             default:
@@ -94,7 +94,7 @@ public class MapBuilder : MonoBehaviour
 
     public bool IsCellHasFloor(int index)
     {
-        return !string.IsNullOrEmpty(cellPropData[index].FloorPath);
+        return !string.IsNullOrEmpty(cellAssetData[index].FloorPath);
     }
 
     public (int x, int y) Convert1DIndexTo2D(int index)
@@ -112,7 +112,7 @@ public class MapBuilder : MonoBehaviour
 
     public void DeleteLevelData()
     {
-        cellPropData = new CellPropData[cells.Length];
+        cellAssetData = new CellAssetsData[cells.Length];
 
         for (var i = levelParent.childCount - 1; i >= 0; i--)
         {

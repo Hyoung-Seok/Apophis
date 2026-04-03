@@ -4,9 +4,9 @@ using UnityEngine;
 public class LevelData : ScriptableObject
 {
     public string LevelName => LevelName;
-    public List<CellPropData> LevelPropData => levelPropData;
+    public List<CellAssetsData> CellAssetData => cellAssetData;
     
     [SerializeField] private string levelName;
-    [SerializeField] private List<CellPropData> levelPropData;
+    [SerializeField] private List<CellAssetsData> cellAssetData;
 
 }
