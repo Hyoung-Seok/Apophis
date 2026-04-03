@@ -123,7 +123,11 @@ public class MapBuilderEditor : Editor
             
             case "Wall":
                 _selectedObj.SetActive(false);
-                if(TryRaycast(e.mousePosition, _mapBuilder.FloorLayer, out var floorHit) == false) return;
+                if (TryRaycast(e.mousePosition, _mapBuilder.FloorLayer, out var floorHit) == false)
+                {
+                    _wallPlaceData?.Wall.SetActive(false);
+                    return;
+                }
                 
                 if (_wallPlaceData == null)
                 {
