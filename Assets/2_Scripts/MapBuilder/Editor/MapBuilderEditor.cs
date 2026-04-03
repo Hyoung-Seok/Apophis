@@ -182,39 +182,57 @@ public class MapBuilderEditor : Editor
         var index = hit.transform.GetSiblingIndex();
         var index2D = _mapBuilder.Convert1DIndexTo2D(index);
         var pos = hit.transform.position;
+        var groupIndex = 0;
         
         switch (assetData.Category)
         {
             case "Floor":
+                groupIndex = Undo.GetCurrentGroup();
+                Undo.RegisterCompleteObjectUndo(_mapBuilder, "PlaceFloor");
+                
                 if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false)
                 {
                     break;
                 }
-
+                
                 var floorObj = Instantiate(_selectedObj, pos, _selectedObj.transform.rotation, _mapBuilder.LevelParent);
                 floorObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
+                
+                Undo.RegisterCreatedObjectUndo(floorObj, "PlaceFloor");
+                Undo.CollapseUndoOperations(groupIndex);
                 break;
 
             case "Wall":
+                groupIndex = Undo.GetCurrentGroup();
+                Undo.RegisterCompleteObjectUndo(_mapBuilder, "PlaceWall");
+                
                 if (_mapBuilder.IsCellHasFloor(index) == false) break;
                 if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false) break;
 
                 var ts = _wallPlaceData.Pivot.transform;
                 var wallObj = Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
                 wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
+                
+                Undo.RegisterCreatedObjectUndo(wallObj, "PlaceWall");
+                Undo.CollapseUndoOperations(groupIndex);
                 break;
             
             default:
+                groupIndex = Undo.GetCurrentGroup();
+                Undo.RegisterCompleteObjectUndo(_mapBuilder, "PlaceObject");
+                
                 _mapBuilder.AddFreeAssetData(assetData.Path, _selectedObj.transform.position, _selectedObj.transform.rotation.y);
-                Instantiate(_selectedObj, _selectedObj.transform.position, _selectedObj.transform.rotation,
+                var obj = Instantiate(_selectedObj, _selectedObj.transform.position, _selectedObj.transform.rotation,
                     _mapBuilder.LevelParent);
+                
+                Undo.RegisterCreatedObjectUndo(obj, "PlaceObject");
+                Undo.CollapseUndoOperations(groupIndex);
                 break;
         }
         
         e.Use();
     }
     
-
     private void RotationFloorOrWallAsset(Event e)
     {
         var dir = e.delta.y > 0 ? 1 : -1;
@@ -269,7 +287,7 @@ public class MapBuilderEditor : Editor
         popUp.SetMessage("현재 배치된 모든 에셋을 삭제하시겠습니까?");
         popUp.AddAcceptBtnAction(_mapBuilder.DeleteLevelData);
     }
-
+    
     private void OnEnable()
     {
         PaletteCustomEditor.OnAssetSelected += OnPaletteAssetChanged;
