@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class CellAssetsData
+public class CellAssetData
 {
     public string FloorPath;
     public ERot90 FloorRot;
