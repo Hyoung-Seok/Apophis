@@ -34,17 +34,17 @@ public class LevelData : ScriptableObject
                 FloorRot = src.FloorRot,
                 WallPaths = (string[])src.WallPaths.Clone()
             };
-            
-            freeAssetData = new List<FreeAssetData>();
-            foreach (var freeAsset in mapBuilder.FreeAssetList)
+        }
+        
+        freeAssetData = new List<FreeAssetData>();
+        foreach (var freeAsset in mapBuilder.FreeAssetList)
+        {
+            freeAssetData.Add(new FreeAssetData()
             {
-                freeAssetData.Add(new FreeAssetData()
-                {
-                    AssetPath = freeAsset.AssetPath,
-                    Position = freeAsset.Position,
-                    YRotation = freeAsset.YRotation,
-                });
-            }
+                AssetPath = freeAsset.AssetPath,
+                Position = freeAsset.Position,
+                YRotation = freeAsset.YRotation,
+            });
         }
     }
 }
