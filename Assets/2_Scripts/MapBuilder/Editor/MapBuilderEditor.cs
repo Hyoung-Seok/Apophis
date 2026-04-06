@@ -10,6 +10,8 @@ public class MapBuilderEditor : Editor
     
     private MapBuilder _mapBuilder;
     private VisualElement _root;
+    private TextField _levelNameInputField;
+    private Button _saveLevelBtn;
     
     private GameObject _selectedObj;
     private string _curCategory;
@@ -38,7 +40,13 @@ public class MapBuilderEditor : Editor
         _root.Q<Button>("DestroyGridBtn").clicked += _mapBuilder.DestroyGrid;
         _root.Q<Button>("OpenPaletteBtn").clicked += PaletteCustomEditor.ShowWindow;
 
+        _saveLevelBtn = _root.Q<Button>("SaveLevelBtn");
+        _saveLevelBtn.clicked += OnClickSaveLevelDataBtn;
+        _saveLevelBtn.SetEnabled(false);
         _root.Q<Button>("DeleteLevel").clicked += OnClickDeleteLevelDataBtn;
+
+        _levelNameInputField = _root.Q<TextField>("LevelNameInputField");
+        _levelNameInputField.RegisterValueChangedCallback(OnLevelNameInputFieldChanged);
     }
 
     private void OnSceneGUI()
@@ -295,6 +303,21 @@ public class MapBuilderEditor : Editor
         _selectedObj.SetActive(false);
     }
 
+    private void OnClickSaveLevelDataBtn()
+    {
+        var levelName = _levelNameInputField.text;
+
+        if (levelName.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
+        {
+            EditorUtility.DisplayDialog("저장 실패", "파일명에 사용할 수 없는 문자가 포함되어 있습니다.", "확인");
+            return;
+        }
+
+        var success = LevelDataIO.Save(_mapBuilder, levelName);
+        var msg = success ? $"'{levelName}' 저장 성공" : $"'{levelName}' 저장 실패";
+        EditorUtility.DisplayDialog("저장",msg, "확인");
+    }
+    
     private void OnClickDeleteLevelDataBtn()
     {
         PopupCustomWindow.ShowWindow();
@@ -306,6 +329,12 @@ public class MapBuilderEditor : Editor
     }
     
     private bool IsSnapCellCategory => _curCategory == "Floor" || _curCategory == "Wall";
+
+    private void OnLevelNameInputFieldChanged(ChangeEvent<string> evt)
+    {
+        var isEmpty = string.IsNullOrEmpty(_levelNameInputField.text);
+        _saveLevelBtn.SetEnabled(!isEmpty);
+    }
     
     private void OnEnable()
     {

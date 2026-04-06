@@ -5,10 +5,13 @@ using UnityEngine;
 public class MapBuilder : MonoBehaviour
 {
     public Cell[] Cells => cells;
+    public Vector2Int GridSize => gridSize;
     public float CellSize => cellSize;
     public LayerMask CellLayer => cellLayer;
     public LayerMask FloorLayer => floorLayer;
     public Transform LevelParent => levelParent;
+    public CellAssetData[] CellAssetsArr => cellAssetArr;
+    public List<FreeAssetData> FreeAssetList => freeAssetList;
     
     [SerializeField] private GameObject cellObj;
     [SerializeField] private LayerMask cellLayer;
@@ -20,8 +23,8 @@ public class MapBuilder : MonoBehaviour
     [SerializeField] private float cellInterval;
 
     [SerializeField, HideInInspector] private Cell[] cells;
-    [SerializeField, HideInInspector] private CellAssetsData[] cellAssetData;
-    [SerializeField, HideInInspector] private List<FreeAssetData> freeAssetsData = new();
+    [SerializeField, HideInInspector] private CellAssetData[] cellAssetArr;
+    [SerializeField, HideInInspector] private List<FreeAssetData> freeAssetList = new();
     [SerializeField, HideInInspector] private GameObject gridParent;
     
     private GameObject _cell;
@@ -33,7 +36,11 @@ public class MapBuilder : MonoBehaviour
         InitCellObject();
         
         cells = new Cell[gridSize.x * gridSize.y];
-        cellAssetData = new CellAssetsData[cells.Length];
+        cellAssetArr = new CellAssetData[cells.Length];
+        for (var i = 0; i < cells.Length; i++)
+        {
+            cellAssetArr[i] = new CellAssetData();
+        }
 
         var center = transform.position;
         var startX = center.x - (gridSize.x - 1) * 0.5f * cellSize;
@@ -69,22 +76,22 @@ public class MapBuilder : MonoBehaviour
         switch (assetData.Category)
         {
             case "Floor":
-                if (!string.IsNullOrEmpty(cellAssetData[index].FloorPath))
+                if (!string.IsNullOrEmpty(cellAssetArr[index].FloorPath))
                 {
                     return false;
                 }
                 
-                cellAssetData[index].FloorPath = assetData.Path;
-                cellAssetData[index].FloorRot = rot;
+                cellAssetArr[index].FloorPath = assetData.Path;
+                cellAssetArr[index].FloorRot = rot;
                 break;
             
             case "Wall":
-                if (!string.IsNullOrEmpty(cellAssetData[index].WallPaths[(int)rot]))
+                if (!string.IsNullOrEmpty(cellAssetArr[index].WallPaths[(int)rot]))
                 {
                     return false;
                 }
 
-                cellAssetData[index].WallPaths[(int)rot] = assetData.Path;
+                cellAssetArr[index].WallPaths[(int)rot] = assetData.Path;
                 break;
         }
 
@@ -93,16 +100,19 @@ public class MapBuilder : MonoBehaviour
 
     public void AddFreeAssetData(string path, Vector3 pos, float yRot)
     {
-        var freeAssetData = new FreeAssetData();
+        var assetData = new FreeAssetData()
+        {
+            AssetPath =  path,
+            Position = pos,
+            YRotation =  yRot
+        };
         
-        freeAssetData.AssetPath = path;
-        freeAssetData.Position = pos;
-        freeAssetData.YRotation = yRot;
+        freeAssetList.Add(assetData);
     }
 
     public bool IsCellHasFloor(int index)
     {
-        return !string.IsNullOrEmpty(cellAssetData[index].FloorPath);
+        return !string.IsNullOrEmpty(cellAssetArr[index].FloorPath);
     }
 
     public (int x, int y) Convert1DIndexTo2D(int index)
@@ -113,15 +123,10 @@ public class MapBuilder : MonoBehaviour
         return (x, y);
     }
 
-    public void SaveLevelData()
-    {
-        
-    }
-
     public void DeleteLevelData()
     {
-        cellAssetData = new CellAssetsData[cells.Length];
-        freeAssetsData.Clear();
+        cellAssetArr = new CellAssetData[cells.Length];
+        freeAssetList.Clear();
 
         for (var i = levelParent.childCount - 1; i >= 0; i--)
         {
