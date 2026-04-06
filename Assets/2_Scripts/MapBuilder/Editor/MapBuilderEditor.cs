@@ -236,7 +236,7 @@ public class MapBuilderEditor : Editor
 
     private GameObject PlaceFreeAsset(BuilderAssetData assetData)
     {
-        _mapBuilder.AddFreeAssetData(assetData.Path, _selectedObj.transform.position, _selectedObj.transform.rotation.y);
+        _mapBuilder.AddFreeAssetData(assetData.Path, _selectedObj.transform.position, _selectedObj.transform.eulerAngles.y);
         var obj = Instantiate(_selectedObj, _selectedObj.transform.position, _selectedObj.transform.rotation,
             _mapBuilder.LevelParent);
 
@@ -307,7 +307,7 @@ public class MapBuilderEditor : Editor
     {
         var levelName = _levelNameInputField.text;
 
-        if (levelName.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
+        if (levelName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
         {
             EditorUtility.DisplayDialog("저장 실패", "파일명에 사용할 수 없는 문자가 포함되어 있습니다.", "확인");
             return;

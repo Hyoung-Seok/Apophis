@@ -10,7 +10,7 @@ public static class LevelDataIO
         var path = $"{DEFAULT_PATH}/{levelName}.asset";
         var data = AssetDatabase.LoadAssetAtPath<LevelData>(path);
 
-        if (Exists(path) == true)
+        if (data != null)
         {
             if (EditorUtility.DisplayDialog(
                     "덮어쓰기 확인", $"'{levelName}'이 이미 존재합니다. 덮어쓰시겠습니까?",
@@ -31,6 +31,4 @@ public static class LevelDataIO
 
         return true;
     }
-
-    private static bool Exists(string path) => AssetDatabase.LoadAssetAtPath<LevelData>(path) != null;
 }
