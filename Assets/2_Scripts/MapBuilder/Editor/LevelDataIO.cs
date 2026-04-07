@@ -3,7 +3,7 @@ using UnityEditor;
 
 public static class LevelDataIO
 {
-    private const string DEFAULT_PATH = "Assets/7_Data/MapBuilder/LevelData";
+    public const string DEFAULT_PATH = "Assets/7_Data/MapBuilder/LevelData";
 
     public static bool Save(MapBuilder mapBuilder, string levelName)
     {

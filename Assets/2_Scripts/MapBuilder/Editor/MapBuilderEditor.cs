@@ -10,8 +10,6 @@ public class MapBuilderEditor : Editor
     
     private MapBuilder _mapBuilder;
     private VisualElement _root;
-    private TextField _levelNameInputField;
-    private Button _saveLevelBtn;
     
     private GameObject _selectedObj;
     private string _curCategory;
@@ -39,14 +37,7 @@ public class MapBuilderEditor : Editor
         _root.Q<Button>("CreateGridBtn").clicked += _mapBuilder.CreateGrid;
         _root.Q<Button>("DestroyGridBtn").clicked += _mapBuilder.DestroyGrid;
         _root.Q<Button>("OpenPaletteBtn").clicked += PaletteCustomEditor.ShowWindow;
-
-        _saveLevelBtn = _root.Q<Button>("SaveLevelBtn");
-        _saveLevelBtn.clicked += OnClickSaveLevelDataBtn;
-        _saveLevelBtn.SetEnabled(false);
-        _root.Q<Button>("DeleteLevel").clicked += OnClickDeleteLevelDataBtn;
-
-        _levelNameInputField = _root.Q<TextField>("LevelNameInputField");
-        _levelNameInputField.RegisterValueChangedCallback(OnLevelNameInputFieldChanged);
+        _root.Q<Button>("OpenLevelDataIOBtn").clicked += LevelDataIOEditor.ShowWindow;
     }
 
     private void OnSceneGUI()
@@ -302,40 +293,8 @@ public class MapBuilderEditor : Editor
         _selectedObj = Instantiate(obj, _mapBuilder.LevelParent);
         _selectedObj.SetActive(false);
     }
-
-    private void OnClickSaveLevelDataBtn()
-    {
-        var levelName = _levelNameInputField.text;
-        EditorApplication.Beep();
-        
-        if (levelName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
-        {
-            EditorUtility.DisplayDialog("저장 실패", "파일명에 사용할 수 없는 문자가 포함되어 있습니다.", "확인");
-            return;
-        }
-
-        var success = LevelDataIO.Save(_mapBuilder, levelName);
-        var msg = success ? $"'{levelName}' 저장 성공" : $"'{levelName}' 저장 실패";
-        EditorUtility.DisplayDialog("저장",msg, "확인");
-    }
-    
-    private void OnClickDeleteLevelDataBtn()
-    {
-        EditorApplication.Beep();
-        if (EditorUtility.DisplayDialog("레벨 삭제", 
-                "현재 배치된 모든 레벨을 삭제하시겠습니까?", "확인", "취소") == true)
-        {
-            _mapBuilder.DeleteLevelData();
-        }
-    }
     
     private bool IsSnapCellCategory => _curCategory == "Floor" || _curCategory == "Wall";
-
-    private void OnLevelNameInputFieldChanged(ChangeEvent<string> evt)
-    {
-        var isEmpty = string.IsNullOrEmpty(_levelNameInputField.text);
-        _saveLevelBtn.SetEnabled(!isEmpty);
-    }
     
     private void OnEnable()
     {
@@ -345,7 +304,8 @@ public class MapBuilderEditor : Editor
     private void OnDisable()
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
-        _mapBuilder.Cells[_prevIndex]?.ChangeAlpha(ORIGIN_ALPHA);
+        if (_mapBuilder.Cells != null && _prevIndex < _mapBuilder.Cells.Length)
+            _mapBuilder.Cells[_prevIndex]?.ChangeAlpha(ORIGIN_ALPHA);
         
         if (_selectedObj != null)
         {

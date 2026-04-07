@@ -45,11 +45,21 @@ public class PaletteCustomEditor : EditorWindow
     private void BindElements()
     {
         _assetsDropdownField = rootVisualElement.Q<DropdownField>("AssetCategory");
+        _assetsDropdownField.RegisterValueChangedCallback(OnCategoryChanged);
+        
         _assetsPath = rootVisualElement.Q<TextField>("AssetPath");
         _assetsContainer = rootVisualElement.Q<VisualElement>("AssetsContainer");
         _favoritesContainer = rootVisualElement.Q<VisualElement>("FavoriteContainer");
 
-        _assetsDropdownField.RegisterValueChangedCallback(OnCategoryChanged);
+        rootVisualElement.Q<Button>("DeleteLevelBtn").clicked += () =>
+        {
+            EditorApplication.Beep();
+            if (EditorUtility.DisplayDialog("레벨 삭제", 
+                    "현재 배치된 모든 레벨을 삭제하시겠습니까?", "확인", "취소") == true)
+            {
+                FindFirstObjectByType<MapBuilder>()?.DeleteLevelData();
+            }
+        };
     }
 
     private void LoadAssets()

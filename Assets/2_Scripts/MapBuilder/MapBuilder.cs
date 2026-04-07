@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class MapBuilder : MonoBehaviour
@@ -110,6 +111,11 @@ public class MapBuilder : MonoBehaviour
         freeAssetList.Add(assetData);
     }
 
+    public void LoadLevelData(LevelData data)
+    {
+        
+    }
+
     public bool IsCellHasFloor(int index)
     {
         return !string.IsNullOrEmpty(cellAssetArr[index].FloorPath);
@@ -122,16 +128,20 @@ public class MapBuilder : MonoBehaviour
         
         return (x, y);
     }
-
+    
     public void DeleteLevelData()
     {
+        var groupIndex = Undo.GetCurrentGroup();
+        Undo.RegisterCompleteObjectUndo(this, "DeleteLevel");
+        
         cellAssetArr = new CellAssetData[cells.Length];
         freeAssetList.Clear();
 
         for (var i = levelParent.childCount - 1; i >= 0; i--)
         {
-            DestroyImmediate(levelParent.GetChild(i).gameObject);
+            Undo.DestroyObjectImmediate(levelParent.GetChild(i).gameObject);
         }
+        Undo.CollapseUndoOperations(groupIndex);
     }
 
     private void InitCellObject()
