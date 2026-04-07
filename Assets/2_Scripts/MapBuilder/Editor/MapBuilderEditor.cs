@@ -306,7 +306,8 @@ public class MapBuilderEditor : Editor
     private void OnClickSaveLevelDataBtn()
     {
         var levelName = _levelNameInputField.text;
-
+        EditorApplication.Beep();
+        
         if (levelName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
         {
             EditorUtility.DisplayDialog("저장 실패", "파일명에 사용할 수 없는 문자가 포함되어 있습니다.", "확인");
@@ -320,12 +321,12 @@ public class MapBuilderEditor : Editor
     
     private void OnClickDeleteLevelDataBtn()
     {
-        PopupCustomWindow.ShowWindow();
-
-        var popUp = EditorWindow.GetWindow<PopupCustomWindow>();
-        
-        popUp.SetMessage("현재 배치된 모든 에셋을 삭제하시겠습니까?");
-        popUp.AddAcceptBtnAction(_mapBuilder.DeleteLevelData);
+        EditorApplication.Beep();
+        if (EditorUtility.DisplayDialog("레벨 삭제", 
+                "현재 배치된 모든 레벨을 삭제하시겠습니까?", "확인", "취소") == true)
+        {
+            _mapBuilder.DeleteLevelData();
+        }
     }
     
     private bool IsSnapCellCategory => _curCategory == "Floor" || _curCategory == "Wall";
