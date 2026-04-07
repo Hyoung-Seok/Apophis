@@ -5,19 +5,18 @@ public static class LevelDataIO
 {
     public const string DEFAULT_PATH = "Assets/7_Data/MapBuilder/LevelData";
 
-    public static bool Save(MapBuilder mapBuilder, string levelName)
+    public static ESaveResult Save(MapBuilder mapBuilder, string levelName)
     {
         var path = $"{DEFAULT_PATH}/{levelName}.asset";
         var data = AssetDatabase.LoadAssetAtPath<LevelData>(path);
 
         if (data != null)
         {
-            if (EditorUtility.DisplayDialog(
-                    "덮어쓰기 확인", $"'{levelName}'이 이미 존재합니다. 덮어쓰시겠습니까?",
-                    "덮어쓰기", "취소") == false)
-            {
-                return false;
-            }
+            var confirm = EditorUtility.DisplayDialog(
+                "덮어쓰기 확인", $"'{levelName}'이 이미 존재합니다. 덮어쓰시겠습니까?",
+                "덮어쓰기", "취소");
+            
+            if(!confirm) return ESaveResult.Cancelled;
         }
         else
         {
@@ -29,6 +28,12 @@ public static class LevelDataIO
         EditorUtility.SetDirty(data);
         AssetDatabase.SaveAssets();
 
-        return true;
+        return ESaveResult.Success;
     }
+}
+
+public enum ESaveResult
+{
+    Success,
+    Cancelled
 }

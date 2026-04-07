@@ -1,5 +1,4 @@
 using System.IO;
-using Unity.Entities;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -33,6 +32,7 @@ public class LevelDataIOEditor : EditorWindow
             EditorUtility.DisplayDialog("실패",
                 "현재 씬에 MapBuilder가 존재하지 않거나 비활성화 되었습니다!", "닫기");
             Close();
+            return;
         }
         
         GetElements();
@@ -114,8 +114,17 @@ public class LevelDataIOEditor : EditorWindow
         }
 
         var success = LevelDataIO.Save(_mapBuilder, levelName);
-        var msg = success ? $"'{levelName}' 저장 성공" : $"'{levelName}' 저장 실패";
-        EditorUtility.DisplayDialog("저장",msg, "확인");
+        switch (success)
+        {
+            case ESaveResult.Success:
+                RefreshLevelList();
+                EditorUtility.DisplayDialog("저장",$"{levelName} 저장 성공!","확인");
+                break;
+            
+            case ESaveResult.Cancelled:
+            default:
+                break;
+        }
     }
 
     private void DeleteLevel(TemplateContainer uxml)
@@ -175,7 +184,6 @@ public class LevelDataIOEditor : EditorWindow
         }
 
         AssetDatabase.SaveAssets();
-        uxml.name = AssetDatabase.AssetPathToGUID(targetPath);
         uxml.Q<Label>("LevelName").text = levelName;
     }
 
