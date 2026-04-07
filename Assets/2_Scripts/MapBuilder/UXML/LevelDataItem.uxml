@@ -1,0 +1,7 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/2_Scripts/MapBuilder/UXML/MapBuilderStyleSheets.uss?fileID=7433441132597879392&amp;guid=3615a16858173454ab0eb87a4b46d03a&amp;type=3#MapBuilderStyleSheets"/>
+    <ui:VisualElement name="LevelDataVisualElement" style="flex-grow: 1;">
+        <ui:Button text="" name="LevelSelectBtn" class="button" style="flex-grow: 1; background-image: resource(&quot;Toolbar/toolbar_scene_effect_dark@2x&quot;); border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;"/>
+        <ui:Label text="name" name="LevelName" style="-unity-text-align: middle-center; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=4485744e0583fc04dbb01d02726f04ca&amp;type=3#SCDream5&quot;); margin-top: 2px;"/>
+    </ui:VisualElement>
+</ui:UXML>
