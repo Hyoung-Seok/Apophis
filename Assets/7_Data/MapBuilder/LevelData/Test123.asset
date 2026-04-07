@@ -1,0 +1,828 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95205860312c24c4ea71262411c1fda7, type: 3}
+  m_Name: Test123
+  m_EditorClassIdentifier: Assembly-CSharp::LevelData
+  levelName: Test
+  cellAssetData:
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 43
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - 
+    - 
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+  - Index: 44
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - 
+    - 
+    - 
+  - Index: 45
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - 
+    - 
+    - 
+  - Index: 46
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - 
+    - 
+    - 
+  - Index: 47
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - 
+    - 
+    - 
+  - Index: 48
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 53
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+  - Index: 54
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 55
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 56
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 57
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 58
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - Assets/3_Prefabs/MapBuilder/Wall/Wall_4.prefab
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 63
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 64
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 65
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 66
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 67
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 68
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 73
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 74
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 75
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 76
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 77
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 78
+    FloorPath: Assets/3_Prefabs/MapBuilder/Floor/Floor_1.prefab
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  - Index: 0
+    FloorPath: 
+    FloorRot: 0
+    WallPaths:
+    - 
+    - 
+    - 
+    - 
+  freeAssetData:
+  - AssetPath: Assets/3_Prefabs/MapBuilder/Object/Object_8.prefab
+    Position: {x: 1.3931625, y: 0, z: -0.7779134}
+    YRotation: -0
+  - AssetPath: Assets/3_Prefabs/MapBuilder/Object/Object_8.prefab
+    Position: {x: 0.41502857, y: 0, z: -1.6216742}
+    YRotation: 0.5735765
+  - AssetPath: Assets/3_Prefabs/MapBuilder/Object/Object_8.prefab
+    Position: {x: -0.29086757, y: 0.4, z: -0.48449385}
+    YRotation: 0.5735765
+  gridSize: {x: 10, y: 10}
+  cellSize: 1
