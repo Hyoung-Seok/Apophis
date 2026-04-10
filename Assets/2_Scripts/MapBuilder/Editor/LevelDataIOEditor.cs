@@ -78,26 +78,29 @@ public class LevelDataIOEditor : EditorWindow
         var btn = uxml.Q<Button>("LevelSelectBtn");
         btn.clicked += () =>
         {
-            if (EditorUtility.DisplayDialog("불러오기",
-                    "레벨 정보를 불러오시겠습니까?(주의 : 현재 배치된 레벨 정보가 사라집니다.)",
-                    "불러오기", "취소") == true)
-            {
-                _mapBuilder.LoadLevelData(
-                    AssetDatabase.LoadAssetAtPath<LevelData>(path));
-            }
-        };
-        
-        btn.RegisterCallback<MouseDownEvent>(evt =>
-        {
-            if (evt.button != (int)MouseButton.RightMouse) return;
-            
             var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("불러오기"), false, () =>
+            {
+                if (EditorUtility.DisplayDialog("불러오기",
+                        "레벨 정보를 불러오시겠습니까?",
+                        "불러오기", "취소") == true)
+                {
+                    LevelDataIO.Load(AssetDatabase.LoadAssetAtPath<LevelData>(path));
+                }
+            });
+            menu.AddItem(new GUIContent("편집하기"), false, () =>
+            {
+                if (EditorUtility.DisplayDialog("편집하기", 
+                        "레벨 정보를 불러오시겠습니까?(주의 : 현재 배치중인 레벨 정보가 사라집니다.)", 
+                        "확인", "취소") == true)
+                {
+                    LevelDataIO.LoadAsEditingMode(_mapBuilder, AssetDatabase.LoadAssetAtPath<LevelData>(path));   
+                }
+            });
             menu.AddItem(new GUIContent("삭제"), false, () => DeleteLevel(uxml));
             menu.AddItem(new GUIContent("이름 변경"), false, () => RenameLevel(uxml));
             menu.ShowAsContext();
-            
-            evt.StopPropagation();
-        });
+        };
 
         return uxml;
     }

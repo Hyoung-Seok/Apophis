@@ -12,8 +12,8 @@ public class MapBuilderEditor : Editor
     private VisualElement _root;
     
     private GameObject _selectedObj;
+    private GameObject _curWall;
     private string _curCategory;
-    private WallPlaceData _wallPlaceData;
     private ERot90 _curRot = ERot90.D0;
 
     private int _prevIndex = 0;
@@ -30,6 +30,23 @@ public class MapBuilderEditor : Editor
         BindingButton();
 
         return _root;
+    }
+
+    public static GameObject CreateWallPivot(GameObject wallPrefab, Transform parent, float cellSize)
+    {
+        var pivot = new GameObject("WallPivot");
+        pivot.transform.SetParent(parent);
+
+        var wall = Instantiate(wallPrefab, pivot.transform);
+        wall.transform.rotation = Quaternion.identity;
+        var bound = wall.GetComponent<Renderer>().bounds;
+        
+        var wallHeight = bound.size.y;
+        var wallDepth = bound.extents.z;
+        wall.transform.localPosition 
+            = new Vector3(0, wallHeight / 2f, cellSize / 2f + wallDepth);
+
+        return pivot;
     }
     
     private void BindingButton()
@@ -121,36 +138,23 @@ public class MapBuilderEditor : Editor
                 break;
             
             case "Wall":
-                _selectedObj.SetActive(false);
                 if (TryRaycast(e.mousePosition, _mapBuilder.FloorLayer, out var floorHit) == false)
                 {
-                    _wallPlaceData?.Wall.SetActive(false);
+                    if(_curWall != null)
+                        _curWall.SetActive(false);
                     return;
                 }
                 
-                if (_wallPlaceData == null)
+                if (_curWall == null)
                 {
-                    _wallPlaceData = new WallPlaceData();
-                    
-                    // 1. 피봇 오브젝트 생성
-                    _wallPlaceData.Pivot = new GameObject("WallPivot");
-                    _wallPlaceData.Pivot.transform.parent = _mapBuilder.LevelParent;
-                    
-                    // 2. 벽 생성
-                    _wallPlaceData.Wall = Instantiate(_selectedObj, _wallPlaceData.Pivot.transform);
-                    _wallPlaceData.Wall.transform.rotation = Quaternion.identity;
-                    var bound= _wallPlaceData.Wall.GetComponentInChildren<Renderer>().bounds;
-                    
-                    // 3. 오프셋 계산
-                    var wallHeight = bound.size.y;
-                    var wallDepth = bound.extents.z;
-                    _wallPlaceData.Wall.transform.localPosition 
-                        = new Vector3(0, wallHeight / 2f, _mapBuilder.CellSize / 2f + wallDepth);
+                    _selectedObj.SetActive(true);
+                    _curWall = CreateWallPivot(_selectedObj, _mapBuilder.LevelParent, _mapBuilder.CellSize);
+                    _selectedObj.SetActive(false);
                 }
                 
-                _wallPlaceData.Wall.SetActive(true);
-                _wallPlaceData.Pivot.transform.position = new Vector3(pos.x, floorHit.point.y, pos.z);
-                _wallPlaceData.Pivot.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
+                _curWall.SetActive(true);
+                _curWall.transform.position = new Vector3(pos.x, floorHit.point.y, pos.z);
+                _curWall.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
                 break;
         }
     }
@@ -217,8 +221,8 @@ public class MapBuilderEditor : Editor
         if (_mapBuilder.IsCellHasFloor(index) == false) return null;
         if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false) return null;
 
-        var ts = _wallPlaceData.Pivot.transform;
-        var wallObj = Instantiate(_wallPlaceData.Pivot, ts.position, ts.rotation, _mapBuilder.LevelParent);
+        var ts = _curWall.transform;
+        var wallObj = Instantiate(_curWall, ts.position, ts.rotation, _mapBuilder.LevelParent);
         var index2D = _mapBuilder.Convert1DIndexTo2D(index);
         
         wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
@@ -245,9 +249,9 @@ public class MapBuilderEditor : Editor
         }
         else
         {
-            if (_wallPlaceData != null)
+            if (_curWall != null)
             {
-                _wallPlaceData.Pivot.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
+                _curWall.transform.rotation = Quaternion.Euler(0, (int)_curRot * 90f, 0);
             }
         }
     }
@@ -281,10 +285,10 @@ public class MapBuilderEditor : Editor
             _selectedObj = null;
         }
 
-        if (_wallPlaceData != null)
+        if (_curWall != null)
         {
-            DestroyImmediate(_wallPlaceData.Pivot);
-            _wallPlaceData = null;
+            DestroyImmediate(_curWall);
+            _curWall = null;
         }
         
         var obj = AssetDatabase.LoadAssetAtPath<GameObject>(asset.Path);
@@ -313,16 +317,10 @@ public class MapBuilderEditor : Editor
             _selectedObj = null;
         }
 
-        if (_wallPlaceData != null)
+        if (_curWall != null)
         {
-            DestroyImmediate(_wallPlaceData.Pivot);
-            _wallPlaceData = null;
+            DestroyImmediate(_curWall);
+            _curWall = null;
         }
     }
-}
-
-public class WallPlaceData
-{
-    public GameObject Pivot;
-    public GameObject Wall;
 }

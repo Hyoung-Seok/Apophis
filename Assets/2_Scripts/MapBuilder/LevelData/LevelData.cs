@@ -6,6 +6,8 @@ public class LevelData : ScriptableObject
     public string LevelName => levelName;
     public CellAssetData[] CellAssetData => cellAssetData;
     public List<FreeAssetData> FreeAssetData => freeAssetData;
+    public Vector2Int GridSize => gridSize;
+    public float CellSize => cellSize;
     
     [SerializeField] private string levelName;
     [SerializeField] private CellAssetData[] cellAssetData;

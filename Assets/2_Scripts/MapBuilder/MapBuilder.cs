@@ -111,11 +111,6 @@ public class MapBuilder : MonoBehaviour
         freeAssetList.Add(assetData);
     }
 
-    public void LoadLevelData(LevelData data)
-    {
-        
-    }
-
     public bool IsCellHasFloor(int index)
     {
         return !string.IsNullOrEmpty(cellAssetArr[index].FloorPath);
