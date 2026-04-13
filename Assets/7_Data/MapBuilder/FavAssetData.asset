@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f783eb8dab52b2499b11ca7126fadfe, type: 3}
+  m_Name: FavAssetData
+  m_EditorClassIdentifier: Assembly-CSharp::FavAssetsData
+  favAssetGuids:
+  - f7e7b236b48f06e4a8ff4f5782c9719d
+  - fed404647d8097a4489cbaf455643ab0
+  - 29953dbb6a856ae449c4f17e7cf24dd8
+  - 6230741f39d41274082b9123d2f1b272
+  - d1ffced10c92f0b4db2063cd2d531b64
+  - 7131fb44e40ccb54ca7bed215a7773d6

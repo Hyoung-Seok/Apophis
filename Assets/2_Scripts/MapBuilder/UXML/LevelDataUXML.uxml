@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/2_Scripts/MapBuilder/UXML/MapBuilderStyleSheets.uss?fileID=7433441132597879392&amp;guid=3615a16858173454ab0eb87a4b46d03a&amp;type=3#MapBuilderStyleSheets"/>
+    <ui:VisualElement name="LevelSettingElements" style="flex-grow: 0; flex-direction: row; height: 30px; margin-top: 10px; margin-bottom: 15px;">
+        <ui:TextField label="레벨 이름" placeholder-text="" name="LevelNameInputField" style="width: 70%; -unity-text-align: middle-left; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=4485744e0583fc04dbb01d02726f04ca&amp;type=3#SCDream5&quot;); font-size: 16px;"/>
+        <ui:Button text="저장" name="SaveLevelBtn" class="button" style="flex-grow: 1; margin-right: 13px; margin-left: 13px; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=4485744e0583fc04dbb01d02726f04ca&amp;type=3#SCDream5&quot;); font-size: 15px; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px;"/>
+    </ui:VisualElement>
+    <ui:ScrollView name="LevelListScrollView">
+        <ui:VisualElement name="LevelList" style="flex-grow: 1; flex-direction: row; flex-wrap: wrap; justify-content: flex-start;"/>
+    </ui:ScrollView>
+</ui:UXML>
