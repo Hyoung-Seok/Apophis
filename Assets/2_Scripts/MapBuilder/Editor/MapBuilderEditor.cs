@@ -238,6 +238,8 @@ public class MapBuilderEditor : Editor
         if (layer == LayerMask.NameToLayer("Floor"))
         {
             _mapBuilder.CellAssetsArr[index].FloorPath = string.Empty;
+            _mapBuilder.CellAssetsArr[index].FloorRot = ERot90.D0;
+            
             desObj = hit.transform.gameObject;
         }
         else if (layer == LayerMask.NameToLayer("Wall"))
