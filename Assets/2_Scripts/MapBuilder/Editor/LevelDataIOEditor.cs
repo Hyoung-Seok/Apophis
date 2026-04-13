@@ -29,6 +29,7 @@ public class LevelDataIOEditor : EditorWindow
 
         if (_mapBuilder == null)
         {
+            EditorApplication.Beep();
             EditorUtility.DisplayDialog("실패",
                 "현재 씬에 MapBuilder가 존재하지 않거나 비활성화 되었습니다!", "닫기");
             Close();
@@ -81,6 +82,7 @@ public class LevelDataIOEditor : EditorWindow
             var menu = new GenericMenu();
             menu.AddItem(new GUIContent("불러오기"), false, () =>
             {
+                EditorApplication.Beep();
                 if (EditorUtility.DisplayDialog("불러오기",
                         "레벨 정보를 불러오시겠습니까?",
                         "불러오기", "취소") == true)
@@ -90,6 +92,7 @@ public class LevelDataIOEditor : EditorWindow
             });
             menu.AddItem(new GUIContent("편집하기"), false, () =>
             {
+                EditorApplication.Beep();
                 if (EditorUtility.DisplayDialog("편집하기", 
                         "레벨 정보를 불러오시겠습니까?(주의 : 현재 배치중인 레벨 정보가 사라집니다.)", 
                         "확인", "취소") == true)
@@ -112,6 +115,7 @@ public class LevelDataIOEditor : EditorWindow
         
         if (levelName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
         {
+            EditorApplication.Beep();
             EditorUtility.DisplayDialog("저장 실패", "파일명에 사용할 수 없는 문자가 포함되어 있습니다.", "확인");
             return;
         }
@@ -120,6 +124,7 @@ public class LevelDataIOEditor : EditorWindow
         switch (success)
         {
             case ESaveResult.Success:
+                EditorApplication.Beep();
                 RefreshLevelList();
                 EditorUtility.DisplayDialog("저장",$"{levelName} 저장 성공!","확인");
                 break;
@@ -132,6 +137,8 @@ public class LevelDataIOEditor : EditorWindow
 
     private void DeleteLevel(TemplateContainer uxml)
     {
+        EditorApplication.Beep();
+        
         if (TryGetPathFromGuid(uxml.name, out var path) == false)
         {
             EditorUtility.DisplayDialog("삭제 실패", "해당 에셋을 찾을 수 없습니다.", "확인");
@@ -158,6 +165,7 @@ public class LevelDataIOEditor : EditorWindow
     {
         if (TryGetPathFromGuid(uxml.name, out var path) == false)
         {
+            EditorApplication.Beep();
             EditorUtility.DisplayDialog("이름 변경", "해당 에셋을 찾을 수 없습니다.", "확인");
             return;
         }
@@ -173,6 +181,7 @@ public class LevelDataIOEditor : EditorWindow
         
         if (AssetDatabase.LoadAssetAtPath<LevelData>(targetPath) != null)
         {
+            EditorApplication.Beep();
             EditorUtility.DisplayDialog("이름 변경 실패",
                 $"'{levelName}'이 이미 존재합니다.", "확인");
 
@@ -182,6 +191,7 @@ public class LevelDataIOEditor : EditorWindow
         var error = AssetDatabase.RenameAsset(path, levelName);
         if (!string.IsNullOrEmpty(error))
         {
+            EditorApplication.Beep();
             EditorUtility.DisplayDialog("이름 변경 실패", error, "확인");
             return;
         }
@@ -206,6 +216,7 @@ public class LevelDataIOEditor : EditorWindow
     {
         if (_levelNameInputField.text.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
         {
+            EditorApplication.Beep();
             EditorUtility.DisplayDialog("실패", "사용 불가능한 이름입니다.", "확인");
             return false;
         }
