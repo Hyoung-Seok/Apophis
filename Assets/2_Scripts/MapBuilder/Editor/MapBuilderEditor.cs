@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 public class MapBuilderEditor : Editor
 {
     public static EEditorMode CUR_MODE = EEditorMode.Place;
+    private EEditorMode _prevMode = EEditorMode.Place;
     [SerializeField] private VisualTreeAsset mapBuilderUxml;
     
     private MapBuilder _mapBuilder;
@@ -64,6 +65,13 @@ public class MapBuilderEditor : Editor
     private void OnSceneGUI()
     {
         var e = Event.current;
+        
+        if (_prevMode != CUR_MODE)
+        {
+            if (_prevMode == EEditorMode.Remove)
+                ClearRemoveHighlight();
+            _prevMode = CUR_MODE;
+        }
         
         switch (e.type)
         {
