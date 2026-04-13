@@ -8,7 +8,9 @@
                     <ui:DropdownField label="에셋 목록" name="AssetCategory" style="-unity-font-definition: url(&quot;project://database/Assets/Font/SCDream4.otf?fileID=12800000&amp;guid=1f0aeab5cd350f2459cb1f57e0f54689&amp;type=3#SCDream4&quot;); font-size: 20px; margin-top: 5px; margin-bottom: 5px;"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="RightSettingPanel" style="flex-grow: 0; flex-direction: row; flex-wrap: wrap; width: 30%; min-width: 30%; max-width: 30%; align-self: auto; align-items: center; justify-content: space-between; margin-right: 10px; margin-left: 10px;">
-                    <ui:Button text="배치된 에셋 모두 삭제" name="DeleteLevelBtn" style="width: 85px; height: 50px; white-space: normal; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream4.otf?fileID=12800000&amp;guid=1f0aeab5cd350f2459cb1f57e0f54689&amp;type=3#SCDream4&quot;);"/>
+                    <ui:Button text="배치" name="PlaceBtn" enabled="false" style="height: 50px; width: 70px; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=4485744e0583fc04dbb01d02726f04ca&amp;type=3#SCDream5&quot;); font-size: 20px;"/>
+                    <ui:Button text="삭제" name="RemoveBtn" style="height: 50px; width: 70px; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream5.otf?fileID=12800000&amp;guid=4485744e0583fc04dbb01d02726f04ca&amp;type=3#SCDream5&quot;); font-size: 20px;"/>
+                    <ui:Button text="모두 삭제" name="DeleteLevelBtn" style="width: 70px; height: 50px; white-space: normal; -unity-font-definition: url(&quot;project://database/Assets/Font/SCDream4.otf?fileID=12800000&amp;guid=1f0aeab5cd350f2459cb1f57e0f54689&amp;type=3#SCDream4&quot;); font-size: 18px;"/>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:ScrollView name="AssetScrollView" style="margin-top: 20px; margin-bottom: 20px; margin-right: 10px; margin-left: 10px;">

@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
+    public static readonly int BASE_COLOR = Shader.PropertyToID("_BaseColor");
     [SerializeField] private Renderer cellRenderer;
     
     private MaterialPropertyBlock _mpb;
-    private static readonly int BASE_COLOR = Shader.PropertyToID("_BaseColor");
     
     public void ChangeAlpha(float alpha)
     {

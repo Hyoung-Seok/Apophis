@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,6 +7,7 @@ using UnityEngine.UIElements;
 [CustomEditor(typeof(MapBuilder))]
 public class MapBuilderEditor : Editor
 {
+    public static EEditorMode CUR_MODE = EEditorMode.Place;
     [SerializeField] private VisualTreeAsset mapBuilderUxml;
     
     private MapBuilder _mapBuilder;
@@ -21,6 +23,8 @@ public class MapBuilderEditor : Editor
     private const float HIGHLIGHT_ALPHA = 1f;
     private const float ROTATION_STEP = 5f;
     private const float YPOS_STEP = 0.1f;
+
+    private Renderer _prevHoverAssetRenderer;
     
     public override VisualElement CreateInspectorGUI()
     {
@@ -64,14 +68,21 @@ public class MapBuilderEditor : Editor
         switch (e.type)
         {
             case EventType.MouseMove:
-                UpdateCellHighlight(e);
+                if(CUR_MODE == EEditorMode.Place)
+                    UpdateCellHighlight(e);
+                else
+                    UpdateRemoveHighlight(e);
                 break;
             
-            case EventType.MouseDown:
-                if (e.button != 0 ||
-                    PaletteCustomEditor.Instance?.CurrentSelectedAsset == null) return;
+            case EventType.MouseDown when CUR_MODE == EEditorMode.Place:
+                    if (e.button != 0 ||
+                        PaletteCustomEditor.Instance?.CurrentSelectedAsset == null) return;
 
-                PlaceObject(e);
+                    PlaceObject(e);
+                break;
+            
+            case EventType.MouseDown when CUR_MODE == EEditorMode.Remove:
+                RemoveObject(e);
                 break;
             
             case EventType.ScrollWheel:
@@ -123,6 +134,38 @@ public class MapBuilderEditor : Editor
         _prevIndex = index;
         Repaint();
     }
+
+    private void UpdateRemoveHighlight(Event e)
+    {
+        if (TryRaycast(e.mousePosition, ~_mapBuilder.CellLayer, out var hit) == false)
+        {
+            ClearRemoveHighlight();
+            return;
+        }
+
+        var renderer = hit.transform.GetComponent<Renderer>();
+        if (renderer == null || renderer == _prevHoverAssetRenderer) return;
+
+        ClearRemoveHighlight();
+
+        var mpb = new MaterialPropertyBlock();
+        mpb.SetColor(Cell.BASE_COLOR, Color.red);
+        renderer.SetPropertyBlock(mpb);
+
+        _prevHoverAssetRenderer = renderer;
+        Repaint();
+    }
+
+    private void ClearRemoveHighlight()
+    {
+        if (_prevHoverAssetRenderer == null) return;
+
+        var mpb = new MaterialPropertyBlock();
+        mpb.SetColor(Cell.BASE_COLOR, Color.white);
+        _prevHoverAssetRenderer.SetPropertyBlock(mpb);
+        _prevHoverAssetRenderer = null;
+        Repaint();
+    }
     
     private void SnapPreviewAssetToCell(Event e, Cell cell, RaycastHit cellHit)
     {
@@ -170,6 +213,61 @@ public class MapBuilderEditor : Editor
         _selectedObj.SetActive(true);
         var objPos = new Vector3(hit.point.x, _selectedObj.transform.position.y, hit.point.z);
         _selectedObj.transform.position = objPos;
+    }
+
+    private void RemoveObject(Event e)
+    {
+        if (TryRaycast(e.mousePosition, ~_mapBuilder.CellLayer, out var hit) == false) return;
+        if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var cellHit) == false) return;
+
+        var index = cellHit.transform.GetSiblingIndex();
+        var layer = hit.transform.gameObject.layer;
+        GameObject desObj = null;
+
+        var groupIndex = Undo.GetCurrentGroup();
+        Undo.RegisterCompleteObjectUndo(_mapBuilder, "Remove");
+
+        if (layer == LayerMask.NameToLayer("Floor"))
+        {
+            _mapBuilder.CellAssetsArr[index].FloorPath = string.Empty;
+            desObj = hit.transform.gameObject;
+        }
+        else if (layer == LayerMask.NameToLayer("Wall"))
+        {
+            var pivot = hit.transform.parent;
+            var pivotPos = new Vector2(pivot.position.x, pivot.position.z);
+            var rot = Mathf.RoundToInt(pivot.eulerAngles.y / 90f) % 4;
+
+            var floorIndex = _mapBuilder.Cells.FirstOrDefault(x =>
+            {
+                var cellPos = new Vector2(x.transform.position.x, x.transform.position.z);
+                return Vector2.Distance(cellPos, pivotPos) < 0.01f;
+            })?.transform.GetSiblingIndex();
+
+            if (floorIndex == null) return;
+            _mapBuilder.CellAssetsArr[floorIndex.Value].WallPaths[rot] = string.Empty;
+
+            desObj = pivot.gameObject;
+        }
+        else
+        {
+            var pos = hit.transform.position;
+            var assetIndex = _mapBuilder.FreeAssetList.FindIndex(d =>
+                Vector3.Distance(d.Position, pos) < 0.01f);
+
+            if (assetIndex >= 0)
+            {
+                _mapBuilder.FreeAssetList.RemoveAt(assetIndex);
+                desObj = hit.transform.gameObject;
+            }
+        }
+
+        if (desObj != null)
+            Undo.DestroyObjectImmediate(desObj);
+
+        Undo.CollapseUndoOperations(groupIndex);
+        
+        e.Use();
     }
 
     private void PlaceObject(Event e)

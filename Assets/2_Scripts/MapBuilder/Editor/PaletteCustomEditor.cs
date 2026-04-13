@@ -5,6 +5,12 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+public enum EEditorMode
+{
+    Place,
+    Remove
+}
+
 public class PaletteCustomEditor : EditorWindow
 {
     public static PaletteCustomEditor Instance { get; private set; }
@@ -23,6 +29,9 @@ public class PaletteCustomEditor : EditorWindow
     private VisualElement _favoritesContainer;
     private const string FAV_DATA_PATH = "Assets/7_Data/MapBuilder/FavAssetData.asset";
     private FavAssetsData _favoritesData;
+
+    private Button _placeModeBtn;
+    private Button _removeModeBtn;
     
     public static void ShowWindow()
     {
@@ -60,6 +69,12 @@ public class PaletteCustomEditor : EditorWindow
                 FindFirstObjectByType<MapBuilder>()?.DeleteLevelData();
             }
         };
+        
+        _placeModeBtn = rootVisualElement.Q<Button>("PlaceBtn");
+        _placeModeBtn.clicked += OnClickedPlaceModeBtn;
+        
+        _removeModeBtn = rootVisualElement.Q<Button>("RemoveBtn");
+        _removeModeBtn.clicked += OnClickedRemoveModeBtn;
     }
 
     private void LoadAssets()
@@ -149,6 +164,20 @@ public class PaletteCustomEditor : EditorWindow
             _favoritesContainer.Add(uxml);
             AddLoadPreviewSchedule(previewList);
         }
+    }
+
+    private void OnClickedPlaceModeBtn()
+    {
+        MapBuilderEditor.CUR_MODE = EEditorMode.Place;
+        _placeModeBtn.SetEnabled(false);
+        _removeModeBtn.SetEnabled(true);
+    }
+
+    private void OnClickedRemoveModeBtn()
+    {
+        MapBuilderEditor.CUR_MODE = EEditorMode.Remove;
+        _placeModeBtn.SetEnabled(true);
+        _removeModeBtn.SetEnabled(false);
     }
 
     private void LoadOrCreateFavData()
