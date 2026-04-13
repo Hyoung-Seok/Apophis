@@ -254,7 +254,11 @@ public class MapBuilderEditor : Editor
                 return Vector2.Distance(cellPos, pivotPos) < 0.01f;
             })?.transform.GetSiblingIndex();
 
-            if (floorIndex == null) return;
+            if (floorIndex == null)
+            {
+                Undo.CollapseUndoOperations(groupIndex);
+                return;
+            }
             _mapBuilder.CellAssetsArr[floorIndex.Value].WallPaths[rot] = string.Empty;
 
             desObj = pivot.gameObject;
