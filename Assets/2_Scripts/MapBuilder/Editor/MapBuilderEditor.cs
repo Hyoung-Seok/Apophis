@@ -261,14 +261,20 @@ public class MapBuilderEditor : Editor
         }
         else
         {
-            var pos = hit.transform.position;
+            var target = hit.transform;
+            while (target.parent != null && target.parent != _mapBuilder.LevelParent)
+            {
+                target = target.parent;
+            }
+            
+            var pos = target.transform.position;
             var assetIndex = _mapBuilder.FreeAssetList.FindIndex(d =>
                 Vector3.Distance(d.Position, pos) < 0.01f);
 
             if (assetIndex >= 0)
             {
                 _mapBuilder.FreeAssetList.RemoveAt(assetIndex);
-                desObj = hit.transform.gameObject;
+                desObj = target.gameObject;
             }
         }
 
