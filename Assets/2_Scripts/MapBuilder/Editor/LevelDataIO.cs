@@ -55,9 +55,11 @@ public static class LevelDataIO
 
     private static GameObject[] CreateFloorAsset(LevelData data, Transform parent)
     {
+        var center = Object.FindFirstObjectByType<MapBuilder>().transform.position;
+
         var size = data.GridSize.x * data.GridSize.y;
-        var startX = 0 - (data.GridSize.x - 1) * 0.5f * data.CellSize;
-        var startZ = 0 + (data.GridSize.y - 1) * 0.5f * data.CellSize;
+        var startX = center.x - (data.GridSize.x - 1) * 0.5f * data.CellSize;
+        var startZ = center.z + (data.GridSize.y - 1) * 0.5f * data.CellSize;
         
         var result = new GameObject[size];
         
@@ -71,7 +73,7 @@ public static class LevelDataIO
                 
                 var obj = AssetDatabase.LoadAssetAtPath<GameObject>(data.CellAssetData[index].FloorPath);
                 var cell = Object.Instantiate(obj, parent);
-                var pos = new Vector3(startX + data.CellSize * x, 0, startZ - data.CellSize * y);
+                var pos = new Vector3(startX + data.CellSize * x, center.y, startZ - data.CellSize * y);
                 
                 cell.transform.position = pos;
                 cell.transform.rotation = Quaternion.Euler(0, (int)data.CellAssetData[index].FloorRot * 90, 0);
