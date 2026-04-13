@@ -43,7 +43,14 @@ public static class LevelDataIO
 
     public static void LoadAsEditingMode(MapBuilder mapBuilder, LevelData data)
     {
-        
+        mapBuilder.DeleteLevelData();
+        mapBuilder.SetGridSetting(data);
+        mapBuilder.CreateGrid();
+        mapBuilder.SetAssetData(data);
+
+        var floors = CreateFloorAsset(data, mapBuilder.LevelParent);
+        CreateWallAsset(data, floors, mapBuilder.LevelParent);
+        CreateFreeObject(data, mapBuilder.LevelParent);
     }
 
     private static GameObject[] CreateFloorAsset(LevelData data, Transform parent)

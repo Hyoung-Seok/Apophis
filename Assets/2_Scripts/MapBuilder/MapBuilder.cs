@@ -8,6 +8,7 @@ public class MapBuilder : MonoBehaviour
     public Cell[] Cells => cells;
     public Vector2Int GridSize => gridSize;
     public float CellSize => cellSize;
+    public float CellInterval => cellInterval;
     public LayerMask CellLayer => cellLayer;
     public LayerMask FloorLayer => floorLayer;
     public Transform LevelParent => levelParent;
@@ -38,6 +39,7 @@ public class MapBuilder : MonoBehaviour
         
         cells = new Cell[gridSize.x * gridSize.y];
         cellAssetArr = new CellAssetData[cells.Length];
+        
         for (var i = 0; i < cells.Length; i++)
         {
             cellAssetArr[i] = new CellAssetData();
@@ -71,7 +73,7 @@ public class MapBuilder : MonoBehaviour
 
         DestroyImmediate(gridParent);
     }
-
+    
     public bool TryAddAssetData(int index, BuilderAssetData assetData, ERot90 rot)
     {
         switch (assetData.Category)
@@ -137,6 +139,40 @@ public class MapBuilder : MonoBehaviour
             Undo.DestroyObjectImmediate(levelParent.GetChild(i).gameObject);
         }
         Undo.CollapseUndoOperations(groupIndex);
+    }
+    
+    public void SetGridSetting(LevelData levelData)
+    {
+        gridSize = levelData.GridSize;
+        cellSize = levelData.CellSize;
+        cellInterval = levelData.CellInterval;
+    }
+    
+    public void SetAssetData(LevelData levelData)
+    {
+        for (var i = 0; i < cellAssetArr.Length; i++)
+        {
+            var cellAsset = new CellAssetData()
+            {
+                FloorPath = levelData.CellAssetData[i].FloorPath,
+                FloorRot = levelData.CellAssetData[i].FloorRot,
+                WallPaths = (string[])levelData.CellAssetData[i].WallPaths.Clone()
+            };
+            
+            cellAssetArr[i] = cellAsset;
+        }
+
+        foreach (var data in levelData.FreeAssetData)
+        {
+            var assetData = new FreeAssetData()
+            {
+                AssetPath = data.AssetPath,
+                Position = data.Position,
+                YRotation = data.YRotation
+            };
+            
+            freeAssetList.Add(assetData);
+        }
     }
 
     private void InitCellObject()

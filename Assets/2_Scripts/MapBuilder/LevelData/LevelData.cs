@@ -8,13 +8,15 @@ public class LevelData : ScriptableObject
     public List<FreeAssetData> FreeAssetData => freeAssetData;
     public Vector2Int GridSize => gridSize;
     public float CellSize => cellSize;
-    
+    public float CellInterval => cellInterval;
+
     [SerializeField] private string levelName;
     [SerializeField] private CellAssetData[] cellAssetData;
     [SerializeField] private List<FreeAssetData> freeAssetData;
     
     [SerializeField, HideInInspector] private Vector2Int gridSize;
     [SerializeField, HideInInspector] private float cellSize;
+    [SerializeField, HideInInspector] private float cellInterval;
 
     public void SetData(MapBuilder mapBuilder, string name)
     {
@@ -22,6 +24,7 @@ public class LevelData : ScriptableObject
         
         gridSize = mapBuilder.GridSize;
         cellSize = mapBuilder.CellSize;
+        cellInterval = mapBuilder.CellInterval;
 
         var srcCell = mapBuilder.CellAssetsArr;
         cellAssetData = new CellAssetData[srcCell.Length];
