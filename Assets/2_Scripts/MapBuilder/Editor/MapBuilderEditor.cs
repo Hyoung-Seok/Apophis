@@ -138,7 +138,8 @@ public class MapBuilderEditor : Editor
         curCell.ChangeAlpha(HIGHLIGHT_ALPHA);
         SnapPreviewAssetToCell(e, curCell, hit);
                                     
-        _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+        if (_prevIndex < _mapBuilder.Cells.Length)
+            _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
         _prevIndex = index;
         Repaint();
     }
