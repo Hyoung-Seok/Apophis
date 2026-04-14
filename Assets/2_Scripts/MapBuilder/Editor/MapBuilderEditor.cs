@@ -427,8 +427,9 @@ public class MapBuilderEditor : Editor
     private void OnDisable()
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
-        if (_mapBuilder.Cells != null && _prevIndex < _mapBuilder.Cells.Length)
-            _mapBuilder.Cells[_prevIndex]?.ChangeAlpha(ORIGIN_ALPHA);
+        if (_mapBuilder.Cells != null && _prevIndex < _mapBuilder.Cells.Length
+            && _mapBuilder.Cells[_prevIndex] != null)
+            _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
         
         if (_selectedObj != null)
         {
