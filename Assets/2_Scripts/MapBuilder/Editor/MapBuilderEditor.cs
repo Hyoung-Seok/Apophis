@@ -71,7 +71,6 @@ public class MapBuilderEditor : Editor
             if (_prevMode == EEditorMode.Remove)
             {
                 ClearRemoveHighlight();
-                _prevMode = CUR_MODE;
             }
             else
             {
@@ -80,6 +79,7 @@ public class MapBuilderEditor : Editor
                 
                 DestroyPreviewAssets();
             }
+            _prevMode = CUR_MODE;
         }
         
         switch (e.type)
