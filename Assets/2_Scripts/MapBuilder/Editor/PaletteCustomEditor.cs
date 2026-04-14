@@ -16,6 +16,7 @@ public class PaletteCustomEditor : EditorWindow
     public static PaletteCustomEditor Instance { get; private set; }
     public BuilderAssetData CurrentSelectedAsset {get; private set;}
     public static event Action<BuilderAssetData> OnAssetSelected;
+    public static event Action OnDisablePreviewAsset;
     
     [SerializeField] private VisualTreeAsset paletteUxml;
     [SerializeField] private VisualTreeAsset assetsUxml;
@@ -230,5 +231,6 @@ public class PaletteCustomEditor : EditorWindow
     private void OnDisable()
     {
         Instance = null;
+        OnDisablePreviewAsset?.Invoke();
     }
 }

@@ -78,8 +78,7 @@ public class MapBuilderEditor : Editor
                 _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
                 _prevIndex = 0;
                 
-                if(_curWall != null) DestroyImmediate(_curWall);
-                if(_selectedObj != null) DestroyImmediate(_selectedObj);
+                DestroyPreviewAssets();
             }
         }
         
@@ -428,10 +427,19 @@ public class MapBuilderEditor : Editor
     }
     
     private bool IsSnapCellCategory => _curCategory == "Floor" || _curCategory == "Wall";
+
+    private void DestroyPreviewAssets()
+    {
+        if(_curWall != null) DestroyImmediate(_curWall);
+        if(_selectedObj != null) DestroyImmediate(_selectedObj);
+    }
     
     private void OnEnable()
     {
         PaletteCustomEditor.OnAssetSelected += OnPaletteAssetChanged;
+        
+        PaletteCustomEditor.OnDisablePreviewAsset -= DestroyPreviewAssets;
+        PaletteCustomEditor.OnDisablePreviewAsset += DestroyPreviewAssets;
     }
 
     private void OnDisable()
