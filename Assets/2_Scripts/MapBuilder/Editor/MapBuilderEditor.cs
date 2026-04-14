@@ -69,8 +69,18 @@ public class MapBuilderEditor : Editor
         if (_prevMode != CUR_MODE)
         {
             if (_prevMode == EEditorMode.Remove)
+            {
                 ClearRemoveHighlight();
-            _prevMode = CUR_MODE;
+                _prevMode = CUR_MODE;
+            }
+            else
+            {
+                _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+                _prevIndex = 0;
+                
+                if(_curWall != null) DestroyImmediate(_curWall);
+                if(_selectedObj != null) DestroyImmediate(_selectedObj);
+            }
         }
         
         switch (e.type)
