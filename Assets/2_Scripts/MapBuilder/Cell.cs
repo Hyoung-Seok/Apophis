@@ -10,6 +10,8 @@ public class Cell : MonoBehaviour
     public void ChangeAlpha(float alpha)
     {
         _mpb ??= new MaterialPropertyBlock();
+
+        if (cellRenderer == null) return;
         
         var color = cellRenderer.sharedMaterial.GetColor(BASE_COLOR);
         color.a = alpha;

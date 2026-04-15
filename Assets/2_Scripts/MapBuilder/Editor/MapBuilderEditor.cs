@@ -69,7 +69,16 @@ public class MapBuilderEditor : Editor
         if (_prevMode != CUR_MODE)
         {
             if (_prevMode == EEditorMode.Remove)
+            {
                 ClearRemoveHighlight();
+            }
+            else
+            {
+                _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+                _prevIndex = 0;
+                
+                DestroyPreviewAssets();
+            }
             _prevMode = CUR_MODE;
         }
         
@@ -138,7 +147,8 @@ public class MapBuilderEditor : Editor
         curCell.ChangeAlpha(HIGHLIGHT_ALPHA);
         SnapPreviewAssetToCell(e, curCell, hit);
                                     
-        _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+        if (_prevIndex < _mapBuilder.Cells.Length)
+            _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
         _prevIndex = index;
         Repaint();
     }
@@ -417,17 +427,27 @@ public class MapBuilderEditor : Editor
     }
     
     private bool IsSnapCellCategory => _curCategory == "Floor" || _curCategory == "Wall";
+
+    private void DestroyPreviewAssets()
+    {
+        if(_curWall != null) DestroyImmediate(_curWall);
+        if(_selectedObj != null) DestroyImmediate(_selectedObj);
+    }
     
     private void OnEnable()
     {
         PaletteCustomEditor.OnAssetSelected += OnPaletteAssetChanged;
+        
+        PaletteCustomEditor.OnDisablePreviewAsset -= DestroyPreviewAssets;
+        PaletteCustomEditor.OnDisablePreviewAsset += DestroyPreviewAssets;
     }
 
     private void OnDisable()
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
-        if (_mapBuilder.Cells != null && _prevIndex < _mapBuilder.Cells.Length)
-            _mapBuilder.Cells[_prevIndex]?.ChangeAlpha(ORIGIN_ALPHA);
+        if (_mapBuilder.Cells != null && _prevIndex < _mapBuilder.Cells.Length
+            && _mapBuilder.Cells[_prevIndex] != null)
+            _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
         
         if (_selectedObj != null)
         {
