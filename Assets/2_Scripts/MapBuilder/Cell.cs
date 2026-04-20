@@ -11,11 +11,12 @@ public class Cell : MonoBehaviour
     private Color _curRgb;
     private float _currentAlpha;
 
-    private void Awake()
+
+    public void Init()
     {
         if (cellRenderer == null) return;
-        _originColor = cellRenderer.sharedMaterial.GetColor(BASE_COLOR);
-        _curRgb = _originColor;
+        _originColor  = cellRenderer.sharedMaterial.GetColor(BASE_COLOR);
+        _curRgb       = _originColor;
         _currentAlpha = _originColor.a;
     }
 

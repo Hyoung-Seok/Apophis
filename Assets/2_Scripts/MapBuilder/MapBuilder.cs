@@ -61,6 +61,7 @@ public class MapBuilder : MonoBehaviour
                 cell.name = $"[{x},{y}]";
                 
                 cells[y * gridSize.x + x] = cell.GetComponent<Cell>();
+                cells[y * gridSize.x + x].Init();
             }
         }
         
