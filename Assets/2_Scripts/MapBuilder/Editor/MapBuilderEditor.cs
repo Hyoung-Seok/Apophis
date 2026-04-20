@@ -125,21 +125,34 @@ public class MapBuilderEditor : Editor
 
     private void MouseDownEvent(Event e)
     {
-        if (CUR_MODE == EEditorMode.Place)
+        if (e.button != 0) return;
+        
+        switch (CUR_MODE)
         {
-            if (e.button != 0 || PaletteCustomEditor.Instance?.CurrentSelectedAsset == null) return;
-            if (e.alt == true)
-            {
-                PlaceObjectByRange(e);
-            }
-            else
-            {
-                PlaceObject(e);   
-            }
-        }
-        else if (CUR_MODE == EEditorMode.Remove)
-        {
-            RemoveObject(e);
+            case EEditorMode.Place when _selectedObj != null:
+                if (e.alt == true)
+                {
+                    PlaceObjectByRange(e);
+                }
+                else
+                {
+                    PlaceObject(e);   
+                }
+                break;
+            
+            case EEditorMode.Remove:
+                if (e.alt == true)
+                {
+                    RemoveObjectByRange(e); 
+                }
+                else
+                {
+                    RemoveObject(e);
+                }
+                break;
+            
+            default:
+                return;
         }
         
         e.Use();
@@ -319,18 +332,49 @@ public class MapBuilderEditor : Editor
         e.Use();
     }
 
+    private void RemoveObjectByRange(Event e)
+    {
+        if (SetRangeIndex(e) == false) return;
+        
+        var start2DIndex = _mapBuilder.Convert1DIndexTo2D(_startCellIndex);
+        var end2DIndex = _mapBuilder.Convert1DIndexTo2D(_endCellIndex);
+
+        if (EditorUtility.DisplayDialog("범위 삭제",
+                $"{start2DIndex} 부터 {end2DIndex} 까지 배치된 모든 오브젝트를 삭제하시겠습니까?",
+                "확인", "취소") == true)
+        {
+            var groupIndex = Undo.GetCurrentGroup();
+            Undo.RegisterCompleteObjectUndo(_mapBuilder, "RangeRemove");
+
+            var min = Vector2Int.Min(start2DIndex, end2DIndex);
+            var max = Vector2Int.Max(start2DIndex, end2DIndex);
+
+            for (var i = _mapBuilder.LevelParent.childCount - 1; i >= 0; i--)
+            {
+                var child = _mapBuilder.LevelParent.GetChild(i);
+
+                if (TryParseIndex(child.name, out var x, out var y)
+                    && x >= min.x && x <= max.x
+                    && y >= min.y && y <= max.y)
+                {
+                    Undo.DestroyObjectImmediate(child.gameObject);
+                    var index = _mapBuilder.Convert2DIndexTo1D(new Vector2Int(x, y));
+
+                    _mapBuilder.CellAssetsArr[index].FloorPath = string.Empty;
+                    _mapBuilder.CellAssetsArr[index].FloorRot = ERot90.D0;
+                    _mapBuilder.CellAssetsArr[index].WallPaths = new string[4];
+                }
+            }
+            Undo.CollapseUndoOperations(groupIndex);
+        }
+
+        _startCellIndex = _endCellIndex = -1;
+    }
+
     private void PlaceObjectByRange(Event e)
     {
-        if (_selectedObj == null || !IsSnapCellCategory) return;
-        if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit) == false) return;
-        
-        var index = hit.transform.GetSiblingIndex();
-        if (_startCellIndex == -1)
-        {
-            _startCellIndex = index;
-            return;
-        }
-        _endCellIndex = index;
+        if (!IsSnapCellCategory || _selectedObj == null || 
+            SetRangeIndex(e) == false) return;
 
         var start2DIndex = _mapBuilder.Convert1DIndexTo2D(_startCellIndex);
         var end2DIndex = _mapBuilder.Convert1DIndexTo2D(_endCellIndex);
@@ -368,6 +412,20 @@ public class MapBuilderEditor : Editor
         }
         
         _startCellIndex = _endCellIndex = -1;
+    }
+
+    private bool SetRangeIndex(Event e)
+    {
+        if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit) == false) return false;
+
+        var index = hit.transform.GetSiblingIndex();
+        if (_startCellIndex == -1)
+        {
+            _startCellIndex = index;
+            return false;
+        }
+        _endCellIndex = index;
+        return true;
     }
 
     private void PlaceObject(Event e)
@@ -499,6 +557,20 @@ public class MapBuilderEditor : Editor
         _curCategory = asset.Category;
         _selectedObj = Instantiate(obj, _mapBuilder.LevelParent);
         _selectedObj.SetActive(false);
+    }
+
+    private bool TryParseIndex(string name, out int x, out int y)
+    {
+        x = y = 0;
+        
+        var start = name.LastIndexOf('[');
+        var end = name.LastIndexOf(']');
+        if (start == -1 || end == -1) return false;
+
+        var parts = name.Substring(start + 1, end - start - 1).Split(',');
+        return parts.Length == 2
+               && int.TryParse(parts[0], out x)
+               && int.TryParse(parts[1], out y);
     }
     
     private bool IsSnapCellCategory => _curCategory == "Floor" || _curCategory == "Wall";
