@@ -118,12 +118,17 @@ public class MapBuilder : MonoBehaviour
         return !string.IsNullOrEmpty(cellAssetArr[index].FloorPath);
     }
 
-    public (int x, int y) Convert1DIndexTo2D(int index)
+    public Vector2Int Convert1DIndexTo2D(int index)
     {
         var y = index / gridSize.x;
         var x = index % gridSize.x;
         
-        return (x, y);
+        return new Vector2Int(x, y);
+    }
+
+    public int Convert2DIndexTo1D(Vector2Int index)
+    {
+        return index.y * gridSize.x + index.x;
     }
     
     public void DeleteLevelData()
@@ -147,7 +152,7 @@ public class MapBuilder : MonoBehaviour
         cellSize = levelData.CellSize;
         cellInterval = levelData.CellInterval;
     }
-    
+
     public void SetAssetData(LevelData levelData)
     {
         for (var i = 0; i < cellAssetArr.Length; i++)
@@ -158,7 +163,7 @@ public class MapBuilder : MonoBehaviour
                 FloorRot = levelData.CellAssetData[i].FloorRot,
                 WallPaths = (string[])levelData.CellAssetData[i].WallPaths.Clone()
             };
-            
+
             cellAssetArr[i] = cellAsset;
         }
 
@@ -170,7 +175,7 @@ public class MapBuilder : MonoBehaviour
                 Position = data.Position,
                 YRotation = data.YRotation
             };
-            
+
             freeAssetList.Add(assetData);
         }
     }

@@ -25,6 +25,9 @@ public class MapBuilderEditor : Editor
     private const float ROTATION_STEP = 5f;
     private const float YPOS_STEP = 0.1f;
 
+    private int _startCellIndex = -1;
+    private int _endCellIndex = -1;
+
     private Renderer _prevHoverAssetRenderer;
     
     public override VisualElement CreateInspectorGUI()
@@ -68,6 +71,7 @@ public class MapBuilderEditor : Editor
         
         if (_prevMode != CUR_MODE)
         {
+            _startCellIndex = _endCellIndex = -1;
             if (_prevMode == EEditorMode.Remove)
             {
                 ClearRemoveHighlight();
@@ -91,15 +95,8 @@ public class MapBuilderEditor : Editor
                     UpdateRemoveHighlight(e);
                 break;
             
-            case EventType.MouseDown when CUR_MODE == EEditorMode.Place:
-                    if (e.button != 0 ||
-                        PaletteCustomEditor.Instance?.CurrentSelectedAsset == null) return;
-
-                    PlaceObject(e);
-                break;
-            
-            case EventType.MouseDown when CUR_MODE == EEditorMode.Remove:
-                RemoveObject(e);
+            case EventType.MouseDown:
+                MouseDownEvent(e);
                 break;
             
             case EventType.ScrollWheel:
@@ -124,6 +121,28 @@ public class MapBuilderEditor : Editor
             default:
                 return;
         }
+    }
+
+    private void MouseDownEvent(Event e)
+    {
+        if (CUR_MODE == EEditorMode.Place)
+        {
+            if (e.button != 0 || PaletteCustomEditor.Instance?.CurrentSelectedAsset == null) return;
+            if (e.alt == true)
+            {
+                PlaceObjectByRange(e);
+            }
+            else
+            {
+                PlaceObject(e);   
+            }
+        }
+        else if (CUR_MODE == EEditorMode.Remove)
+        {
+            RemoveObject(e);
+        }
+        
+        e.Use();
     }
 
     private void UpdateCellHighlight(Event e)
@@ -300,6 +319,57 @@ public class MapBuilderEditor : Editor
         e.Use();
     }
 
+    private void PlaceObjectByRange(Event e)
+    {
+        if (_selectedObj == null || !IsSnapCellCategory) return;
+        if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit) == false) return;
+        
+        var index = hit.transform.GetSiblingIndex();
+        if (_startCellIndex == -1)
+        {
+            _startCellIndex = index;
+            return;
+        }
+        _endCellIndex = index;
+
+        var start2DIndex = _mapBuilder.Convert1DIndexTo2D(_startCellIndex);
+        var end2DIndex = _mapBuilder.Convert1DIndexTo2D(_endCellIndex);
+
+        if (EditorUtility.DisplayDialog("범위 배치", 
+                $"{start2DIndex} 부터 {end2DIndex} 까지 {_selectedObj.name}을(를) 배치하시겠습니까?",
+                "확인", "취소") == true)
+        {
+            var groupIndex = Undo.GetCurrentGroup();
+            Undo.RegisterCompleteObjectUndo(_mapBuilder, "RangePlace");
+            
+            var min = Vector2Int.Min(start2DIndex, end2DIndex);
+            var max = Vector2Int.Max(start2DIndex, end2DIndex);
+            var assetData = PaletteCustomEditor.Instance.CurrentSelectedAsset;
+
+            for (var y = min.y; y <= max.y; y++)
+            {
+                for (var x = min.x; x <= max.x; x++)
+                {
+                    var cellIndex = _mapBuilder.Convert2DIndexTo1D(new Vector2Int(x, y));
+                    var pos = _mapBuilder.Cells[cellIndex].transform.position;
+                    
+                    var placed = _curCategory switch
+                    {
+                        "Floor" => PlaceFloor(cellIndex, assetData, pos),
+                        "Wall" => PlaceWall(cellIndex, assetData, pos),
+                        _ => null
+                    };
+                    
+                    if(placed != null)
+                        Undo.RegisterCreatedObjectUndo(placed, "RangePlace");
+                }
+            }
+            Undo.CollapseUndoOperations(groupIndex);
+        }
+        
+        _startCellIndex = _endCellIndex = -1;
+    }
+
     private void PlaceObject(Event e)
     {
         if (!TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit))
@@ -317,15 +387,18 @@ public class MapBuilderEditor : Editor
         var placed = assetData.Category switch
         {
             "Floor" => PlaceFloor(index, assetData, pos),
-            "Wall" => PlaceWall(index, assetData),
+            "Wall" => PlaceWall(index, assetData, pos),
             _ => PlaceFreeAsset(assetData)
         };
 
-        if (placed != null)
+        if (placed == null)
         {
-            Undo.RegisterCreatedObjectUndo(placed, $"Place_{assetData.Category}");
-            Undo.CollapseUndoOperations(groupIndex);
+            Undo.RevertAllInCurrentGroup();
+            return;
         }
+        
+        Undo.RegisterCreatedObjectUndo(placed, $"Place_{assetData.Category}");
+        Undo.CollapseUndoOperations(groupIndex);
         
         e.Use();
     }
@@ -344,13 +417,13 @@ public class MapBuilderEditor : Editor
         return floorObj;
     }
 
-    private GameObject PlaceWall(int index, BuilderAssetData assetData)
+    private GameObject PlaceWall(int index, BuilderAssetData assetData, Vector3 pos)
     {
         if (_mapBuilder.IsCellHasFloor(index) == false) return null;
         if (_mapBuilder.TryAddAssetData(index, assetData, _curRot) == false) return null;
 
         var ts = _curWall.transform;
-        var wallObj = Instantiate(_curWall, ts.position, ts.rotation, _mapBuilder.LevelParent);
+        var wallObj = Instantiate(_curWall, pos, ts.rotation, _mapBuilder.LevelParent);
         var index2D = _mapBuilder.Convert1DIndexTo2D(index);
         
         wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
@@ -407,6 +480,8 @@ public class MapBuilderEditor : Editor
 
     private void OnPaletteAssetChanged(BuilderAssetData asset)
     {
+        _startCellIndex = _endCellIndex = -1;
+        
         if (_selectedObj != null)
         {
             DestroyImmediate(_selectedObj);
