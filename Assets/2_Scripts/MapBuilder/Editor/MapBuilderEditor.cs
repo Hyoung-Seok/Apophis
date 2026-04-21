@@ -20,17 +20,12 @@ public class MapBuilderEditor : Editor
     private GameObject _curWall;
     private string _curCategory;
     private ERot90 _curRot = ERot90.D0;
-
-    private int _prevIndex = 0;
-    private const float ORIGIN_ALPHA = 0.3f;
-    private const float HIGHLIGHT_ALPHA = 1f;
+    
     private const float ROTATION_STEP = 5f;
     private const float YPOS_STEP = 0.1f;
 
     private int _startCellIndex = -1;
     private int _endCellIndex = -1;
-    
-    private Renderer _prevHoverAssetRenderer;
     
     public override VisualElement CreateInspectorGUI()
     {
@@ -79,13 +74,11 @@ public class MapBuilderEditor : Editor
             
             if (_prevMode == EEditorMode.Remove)
             {
-                ClearRemoveHighlight();
+                _cellHighlighter.ClearRemoveHighlight();
             }
             else
             {
-                _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
-                _prevIndex = 0;
-                
+                _cellHighlighter.ClearHoverCellHighlight();
                 DestroyPreviewAssets();
             }
             _prevMode = CUR_MODE;
@@ -144,13 +137,30 @@ public class MapBuilderEditor : Editor
                 break;
             
             case EventType.MouseMove:
-                if(CUR_MODE == EEditorMode.Place)
-                    UpdateCellHighlight(e);
+                if (CUR_MODE == EEditorMode.Place)
+                {
+                    OnHoverInPlaceMode(e);
+                }
                 else
-                    UpdateRemoveHighlight(e);
+                {
+                    if (TryRaycast(e.mousePosition, ~_mapBuilder.CellLayer, out var hit))
+                    {
+                        var renderer = hit.transform.gameObject.GetComponent<Renderer>();
+                        if (renderer != null)
+                        {
+                            _cellHighlighter.UpdateRemoveHighlight(renderer);
+                        }
+                    }
+                    else
+                    {
+                        _cellHighlighter.ClearRemoveHighlight();
+                    }
+                    
+                    Repaint();
+                }
+
                 break;
             
- 
             case EventType.ScrollWheel:
                 if (_selectedObj == null) return;
                 
@@ -175,63 +185,28 @@ public class MapBuilderEditor : Editor
         }
     }
     
-    private void UpdateCellHighlight(Event e)
+    private void OnHoverInPlaceMode(Event e)
     {
-        if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit) == false)
+        if (!TryGetCellIndex(e.mousePosition, out var index))
         {
+            _cellHighlighter.ClearHoverCellHighlight();
             if(_selectedObj != null) _selectedObj.SetActive(false);
             return;
         }
 
+        var changed = _cellHighlighter.UpdateCellHighlight(index);
+        
         if (IsSnapCellCategory == false && _selectedObj != null)
         {
             UpdateFreeAssetPreview(e);
-            Repaint();
         }
-
-        var index = hit.transform.GetSiblingIndex();
-        if (index == _prevIndex) return;
-        
-        var curCell = _mapBuilder.Cells[index];
-        curCell.ChangeAlpha(HIGHLIGHT_ALPHA);
-        SnapPreviewAssetToCell(e, curCell, hit);
-                                    
-        if (_prevIndex < _mapBuilder.Cells.Length)
-            _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
-        _prevIndex = index;
-        Repaint();
-    }
-
-    private void UpdateRemoveHighlight(Event e)
-    {
-        if (TryRaycast(e.mousePosition, ~_mapBuilder.CellLayer, out var hit) == false)
+        else if (changed && TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit))
         {
-            ClearRemoveHighlight();
-            return;
+            SnapPreviewAssetToCell(e, _mapBuilder.Cells[index], hit);
         }
-
-        var renderer = hit.transform.GetComponent<Renderer>();
-        if (renderer == null || renderer == _prevHoverAssetRenderer) return;
-
-        ClearRemoveHighlight();
-
-        var mpb = new MaterialPropertyBlock();
-        mpb.SetColor(Cell.BASE_COLOR, Color.red);
-        renderer.SetPropertyBlock(mpb);
-
-        _prevHoverAssetRenderer = renderer;
-        Repaint();
-    }
-    
-    private void ClearRemoveHighlight()
-    {
-        if (_prevHoverAssetRenderer == null) return;
-
-        var mpb = new MaterialPropertyBlock();
-        mpb.SetColor(Cell.BASE_COLOR, Color.white);
-        _prevHoverAssetRenderer.SetPropertyBlock(mpb);
-        _prevHoverAssetRenderer = null;
-        Repaint();
+        
+        if(changed)
+            Repaint();
     }
     
     private void SnapPreviewAssetToCell(Event e, Cell cell, RaycastHit cellHit)
@@ -609,11 +584,12 @@ public class MapBuilderEditor : Editor
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
 
         _startCellIndex = _endCellIndex = -1;
-        _cellHighlighter.RestoreAllHighlights();
-        
-        if (_mapBuilder.Cells != null && _prevIndex < _mapBuilder.Cells.Length
-            && _mapBuilder.Cells[_prevIndex] != null)
-            _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
+
+        if (_mapBuilder.Cells != null)
+        {
+            _cellHighlighter.RestoreAllHighlights();
+            _cellHighlighter.ClearHoverCellHighlight();
+        }
         
         if (_selectedObj != null)
         {
