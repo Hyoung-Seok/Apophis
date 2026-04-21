@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class MapBuilderEditor : Editor
     [SerializeField] private VisualTreeAsset mapBuilderUxml;
     
     private MapBuilder _mapBuilder;
+    private CellHighlighter _cellHighlighter;
     private VisualElement _root;
     
     private GameObject _selectedObj;
@@ -27,13 +29,14 @@ public class MapBuilderEditor : Editor
 
     private int _startCellIndex = -1;
     private int _endCellIndex = -1;
-
+    
     private Renderer _prevHoverAssetRenderer;
     
     public override VisualElement CreateInspectorGUI()
     {
         _root = mapBuilderUxml.CloneTree();
         _mapBuilder = (MapBuilder)target;
+        _cellHighlighter = new CellHighlighter(_mapBuilder, Color.green);
         
         BindingButton();
 
@@ -72,6 +75,8 @@ public class MapBuilderEditor : Editor
         if (_prevMode != CUR_MODE)
         {
             _startCellIndex = _endCellIndex = -1;
+            _cellHighlighter.RestoreAllHighlights();
+            
             if (_prevMode == EEditorMode.Remove)
             {
                 ClearRemoveHighlight();
@@ -88,6 +93,56 @@ public class MapBuilderEditor : Editor
         
         switch (e.type)
         {
+            case EventType.MouseDown:
+                if (e.button != 0) return;
+                
+                if (e.shift && CUR_MODE == EEditorMode.Place
+                    && TryGetCellIndex(e.mousePosition, out var startIndex))
+                {
+                    _endCellIndex = _startCellIndex = startIndex;
+                    _cellHighlighter.UpdateRangeCellHighlight(_startCellIndex, _endCellIndex);
+                }
+                else
+                {
+                    switch (CUR_MODE)
+                    {
+                        case EEditorMode.Place when _selectedObj != null:
+                            PlaceObject(e);
+                            break;
+                        
+                        case EEditorMode.Remove:
+                            RemoveObject(e);
+                            break;
+                    }
+                }
+                
+                e.Use();
+                break;
+            
+            case EventType.MouseDrag:
+                if (_startCellIndex != -1 && TryGetCellIndex(e.mousePosition, out var dragIndex)
+                                          && dragIndex != _endCellIndex)
+                {
+                    _endCellIndex = dragIndex;
+                    _cellHighlighter.UpdateRangeCellHighlight(_startCellIndex, _endCellIndex);
+                    e.Use();
+                }
+                break;
+            
+            case EventType.MouseUp:
+                if (_endCellIndex != -1 && e.button == 0)
+                {
+                    if (_startCellIndex != _endCellIndex)
+                    {
+                        PlaceObjectByRange();
+                    }
+
+                    _startCellIndex = _endCellIndex = -1;
+                    _cellHighlighter.RestoreAllHighlights();
+                    e.Use();
+                }
+                break;
+            
             case EventType.MouseMove:
                 if(CUR_MODE == EEditorMode.Place)
                     UpdateCellHighlight(e);
@@ -95,10 +150,7 @@ public class MapBuilderEditor : Editor
                     UpdateRemoveHighlight(e);
                 break;
             
-            case EventType.MouseDown:
-                MouseDownEvent(e);
-                break;
-            
+ 
             case EventType.ScrollWheel:
                 if (_selectedObj == null) return;
                 
@@ -122,42 +174,7 @@ public class MapBuilderEditor : Editor
                 return;
         }
     }
-
-    private void MouseDownEvent(Event e)
-    {
-        if (e.button != 0) return;
-        
-        switch (CUR_MODE)
-        {
-            case EEditorMode.Place when _selectedObj != null:
-                if (e.alt == true)
-                {
-                    PlaceObjectByRange(e);
-                }
-                else
-                {
-                    PlaceObject(e);   
-                }
-                break;
-            
-            case EEditorMode.Remove:
-                if (e.alt == true)
-                {
-                    RemoveObjectByRange(e); 
-                }
-                else
-                {
-                    RemoveObject(e);
-                }
-                break;
-            
-            default:
-                return;
-        }
-        
-        e.Use();
-    }
-
+    
     private void UpdateCellHighlight(Event e)
     {
         if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit) == false)
@@ -205,7 +222,7 @@ public class MapBuilderEditor : Editor
         _prevHoverAssetRenderer = renderer;
         Repaint();
     }
-
+    
     private void ClearRemoveHighlight()
     {
         if (_prevHoverAssetRenderer == null) return;
@@ -328,8 +345,6 @@ public class MapBuilderEditor : Editor
             Undo.DestroyObjectImmediate(desObj);
 
         Undo.CollapseUndoOperations(groupIndex);
-        
-        e.Use();
     }
 
     private void RemoveObjectByRange(Event e)
@@ -367,51 +382,41 @@ public class MapBuilderEditor : Editor
             }
             Undo.CollapseUndoOperations(groupIndex);
         }
-
-        _startCellIndex = _endCellIndex = -1;
     }
 
-    private void PlaceObjectByRange(Event e)
+    private void PlaceObjectByRange()
     {
-        if (!IsSnapCellCategory || _selectedObj == null || 
-            SetRangeIndex(e) == false) return;
+        if (!IsSnapCellCategory || _selectedObj == null) return;
 
         var start2DIndex = _mapBuilder.Convert1DIndexTo2D(_startCellIndex);
         var end2DIndex = _mapBuilder.Convert1DIndexTo2D(_endCellIndex);
-
-        if (EditorUtility.DisplayDialog("범위 배치", 
-                $"{start2DIndex} 부터 {end2DIndex} 까지 {_selectedObj.name}을(를) 배치하시겠습니까?",
-                "확인", "취소") == true)
-        {
-            var groupIndex = Undo.GetCurrentGroup();
-            Undo.RegisterCompleteObjectUndo(_mapBuilder, "RangePlace");
-            
-            var min = Vector2Int.Min(start2DIndex, end2DIndex);
-            var max = Vector2Int.Max(start2DIndex, end2DIndex);
-            var assetData = PaletteCustomEditor.Instance.CurrentSelectedAsset;
-
-            for (var y = min.y; y <= max.y; y++)
-            {
-                for (var x = min.x; x <= max.x; x++)
-                {
-                    var cellIndex = _mapBuilder.Convert2DIndexTo1D(new Vector2Int(x, y));
-                    var pos = _mapBuilder.Cells[cellIndex].transform.position;
-                    
-                    var placed = _curCategory switch
-                    {
-                        "Floor" => PlaceFloor(cellIndex, assetData, pos),
-                        "Wall" => PlaceWall(cellIndex, assetData, pos),
-                        _ => null
-                    };
-                    
-                    if(placed != null)
-                        Undo.RegisterCreatedObjectUndo(placed, "RangePlace");
-                }
-            }
-            Undo.CollapseUndoOperations(groupIndex);
-        }
+        var min = Vector2Int.Min(start2DIndex, end2DIndex);
+        var max = Vector2Int.Max(start2DIndex, end2DIndex);
         
-        _startCellIndex = _endCellIndex = -1;
+        var groupIndex = Undo.GetCurrentGroup();
+        Undo.RegisterCompleteObjectUndo(_mapBuilder, "RangePlace");
+            
+        var assetData = PaletteCustomEditor.Instance.CurrentSelectedAsset;
+
+        for (var y = min.y; y <= max.y; y++)
+        {
+            for (var x = min.x; x <= max.x; x++)
+            {
+                var cellIndex = _mapBuilder.Convert2DIndexTo1D(new Vector2Int(x, y));
+                var pos = _mapBuilder.Cells[cellIndex].transform.position;
+                    
+                var placed = _curCategory switch
+                {
+                    "Floor" => PlaceFloor(cellIndex, assetData, pos),
+                    "Wall" => PlaceWall(cellIndex, assetData, pos),
+                    _ => null
+                };
+                    
+                if(placed != null)
+                    Undo.RegisterCreatedObjectUndo(placed, "RangePlace");
+            }
+        }
+        Undo.CollapseUndoOperations(groupIndex);
     }
 
     private bool SetRangeIndex(Event e)
@@ -457,8 +462,6 @@ public class MapBuilderEditor : Editor
         
         Undo.RegisterCreatedObjectUndo(placed, $"Place_{assetData.Category}");
         Undo.CollapseUndoOperations(groupIndex);
-        
-        e.Use();
     }
 
     private GameObject PlaceFloor(int index, BuilderAssetData assetData, Vector3 pos)
@@ -536,6 +539,18 @@ public class MapBuilderEditor : Editor
         return Physics.Raycast(ray, out hit, 1000f, layer);
     }
 
+    private bool TryGetCellIndex(Vector2 pos, out int index)
+    {
+        if (TryRaycast(pos, _mapBuilder.CellLayer, out var hit) == false)
+        {
+            index = -1;
+            return false;
+        }
+        
+        index = hit.transform.GetSiblingIndex();
+        return true;
+    }
+
     private void OnPaletteAssetChanged(BuilderAssetData asset)
     {
         _startCellIndex = _endCellIndex = -1;
@@ -592,6 +607,10 @@ public class MapBuilderEditor : Editor
     private void OnDisable()
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
+
+        _startCellIndex = _endCellIndex = -1;
+        _cellHighlighter.RestoreAllHighlights();
+        
         if (_mapBuilder.Cells != null && _prevIndex < _mapBuilder.Cells.Length
             && _mapBuilder.Cells[_prevIndex] != null)
             _mapBuilder.Cells[_prevIndex].ChangeAlpha(ORIGIN_ALPHA);
