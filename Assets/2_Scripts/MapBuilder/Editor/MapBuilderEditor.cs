@@ -13,7 +13,7 @@ public class MapBuilderEditor : Editor
     [SerializeField] private VisualTreeAsset mapBuilderUxml;
     
     private MapBuilder _mapBuilder;
-    private CellHighlighter _cellHighlighter;
+    private MapBuilderHighlighter _mapBuilderHighlighter;
     private VisualElement _root;
     
     private GameObject _selectedObj;
@@ -31,8 +31,8 @@ public class MapBuilderEditor : Editor
     {
         _root = mapBuilderUxml.CloneTree();
         _mapBuilder = (MapBuilder)target;
-        _cellHighlighter = new CellHighlighter(_mapBuilder);
-        _cellHighlighter.RebuildFromHierarchy();
+        _mapBuilderHighlighter = new MapBuilderHighlighter(_mapBuilder);
+        _mapBuilderHighlighter.RebuildFromHierarchy();
         
         BindingButton();
 
@@ -72,15 +72,15 @@ public class MapBuilderEditor : Editor
         if (_prevMode != CUR_MODE)
         {
             _startCellIndex = _endCellIndex = -1;
-            _cellHighlighter.RestoreAllHighlights();
+            _mapBuilderHighlighter.RestoreAllHighlights();
             
             if (_prevMode == EEditorMode.Remove)
             {
-                _cellHighlighter.ClearRemoveHighlight();
+                _mapBuilderHighlighter.ClearRemoveHighlight();
             }
             else
             {
-                _cellHighlighter.ClearHoverCellHighlight();
+                _mapBuilderHighlighter.ClearHoverCellHighlight();
                 DestroyPreviewAssets();
             }
             _prevMode = CUR_MODE;
@@ -94,7 +94,7 @@ public class MapBuilderEditor : Editor
                 if (e.shift && TryGetCellIndex(e.mousePosition, out var startIndex))
                 {
                     _endCellIndex = _startCellIndex = startIndex;
-                    _cellHighlighter.UpdateRangeCellHighlight(_startCellIndex, _endCellIndex);
+                    _mapBuilderHighlighter.UpdateRangeCellHighlight(_startCellIndex, _endCellIndex);
                 }
                 else
                 {
@@ -118,7 +118,7 @@ public class MapBuilderEditor : Editor
                                           && dragIndex != _endCellIndex)
                 {
                     _endCellIndex = dragIndex;
-                    _cellHighlighter.UpdateRangeCellHighlight(_startCellIndex, _endCellIndex);
+                    _mapBuilderHighlighter.UpdateRangeCellHighlight(_startCellIndex, _endCellIndex);
                     e.Use();
                 }
                 break;
@@ -135,7 +135,7 @@ public class MapBuilderEditor : Editor
                     }
 
                     _startCellIndex = _endCellIndex = -1;
-                    _cellHighlighter.RestoreAllHighlights();
+                    _mapBuilderHighlighter.RestoreAllHighlights();
                     e.Use();
                 }
                 break;
@@ -152,12 +152,12 @@ public class MapBuilderEditor : Editor
                         var renderer = hit.transform.gameObject.GetComponent<Renderer>();
                         if (renderer != null)
                         {
-                            _cellHighlighter.UpdateRemoveHighlight(renderer);
+                            _mapBuilderHighlighter.UpdateRemoveHighlight(renderer);
                         }
                     }
                     else
                     {
-                        _cellHighlighter.ClearRemoveHighlight();
+                        _mapBuilderHighlighter.ClearRemoveHighlight();
                     }
                     
                     Repaint();
@@ -193,12 +193,12 @@ public class MapBuilderEditor : Editor
     {
         if (!TryGetCellIndex(e.mousePosition, out var index))
         {
-            _cellHighlighter.ClearHoverCellHighlight();
+            _mapBuilderHighlighter.ClearHoverCellHighlight();
             if(_selectedObj != null) _selectedObj.SetActive(false);
             return;
         }
 
-        var changed = _cellHighlighter.UpdateCellHighlight(index);
+        var changed = _mapBuilderHighlighter.UpdateCellHighlight(index);
         
         if (IsSnapCellCategory == false && _selectedObj != null)
         {
@@ -438,7 +438,7 @@ public class MapBuilderEditor : Editor
         var index2D =  _mapBuilder.Convert1DIndexTo2D(index);
         floorObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
 
-        _cellHighlighter.RegisterFloorRenderer(index, floorObj);
+        _mapBuilderHighlighter.RegisterFloorRenderer(index, floorObj);
         return floorObj;
     }
 
@@ -453,7 +453,7 @@ public class MapBuilderEditor : Editor
         
         wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
         
-        _cellHighlighter.RegisterWallRenderer(index, (int)_curRot, wallObj);
+        _mapBuilderHighlighter.RegisterWallRenderer(index, (int)_curRot, wallObj);
         return wallObj;
     }
 
@@ -560,13 +560,13 @@ public class MapBuilderEditor : Editor
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
         
-        _cellHighlighter.Dispose();
+        _mapBuilderHighlighter.Dispose();
         _startCellIndex = _endCellIndex = -1;
 
         if (_mapBuilder.Cells != null)
         {
-            _cellHighlighter.RestoreAllHighlights();
-            _cellHighlighter.ClearHoverCellHighlight();
+            _mapBuilderHighlighter.RestoreAllHighlights();
+            _mapBuilderHighlighter.ClearHoverCellHighlight();
         }
         
         if (_selectedObj != null)

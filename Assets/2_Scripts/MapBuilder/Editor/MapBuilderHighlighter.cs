@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class CellHighlighter
+public class MapBuilderHighlighter
 {
     private readonly MapBuilder _mapBuilder;
     private PlaceAssetRenderer[] _placeAssetRenderers;
@@ -23,7 +23,7 @@ public class CellHighlighter
 
     private bool _isDirty;
 
-    public CellHighlighter(MapBuilder mapBuilder)
+    public MapBuilderHighlighter(MapBuilder mapBuilder)
     {
         _mapBuilder = mapBuilder;
 
