@@ -31,7 +31,7 @@ public class MapBuilderEditor : Editor
     {
         _root = mapBuilderUxml.CloneTree();
         _mapBuilder = (MapBuilder)target;
-        _cellHighlighter = new CellHighlighter(_mapBuilder, Color.green);
+        _cellHighlighter = new CellHighlighter(_mapBuilder);
         _cellHighlighter.RebuildFromHierarchy();
         
         BindingButton();
@@ -91,8 +91,7 @@ public class MapBuilderEditor : Editor
             case EventType.MouseDown:
                 if (e.button != 0) return;
                 
-                if (e.shift && CUR_MODE == EEditorMode.Place
-                    && TryGetCellIndex(e.mousePosition, out var startIndex))
+                if (e.shift && TryGetCellIndex(e.mousePosition, out var startIndex))
                 {
                     _endCellIndex = _startCellIndex = startIndex;
                     _cellHighlighter.UpdateRangeCellHighlight(_startCellIndex, _endCellIndex);
@@ -129,7 +128,10 @@ public class MapBuilderEditor : Editor
                 {
                     if (_startCellIndex != _endCellIndex)
                     {
-                        PlaceObjectByRange();
+                        if(CUR_MODE == EEditorMode.Place)
+                            PlaceObjectByRange();
+                        else
+                            RemoveObjectByRange();
                     }
 
                     _startCellIndex = _endCellIndex = -1;
@@ -324,10 +326,8 @@ public class MapBuilderEditor : Editor
         Undo.CollapseUndoOperations(groupIndex);
     }
 
-    private void RemoveObjectByRange(Event e)
+    private void RemoveObjectByRange()
     {
-        if (SetRangeIndex(e) == false) return;
-        
         var start2DIndex = _mapBuilder.Convert1DIndexTo2D(_startCellIndex);
         var end2DIndex = _mapBuilder.Convert1DIndexTo2D(_endCellIndex);
 
@@ -395,21 +395,7 @@ public class MapBuilderEditor : Editor
         }
         Undo.CollapseUndoOperations(groupIndex);
     }
-
-    private bool SetRangeIndex(Event e)
-    {
-        if (TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit) == false) return false;
-
-        var index = hit.transform.GetSiblingIndex();
-        if (_startCellIndex == -1)
-        {
-            _startCellIndex = index;
-            return false;
-        }
-        _endCellIndex = index;
-        return true;
-    }
-
+    
     private void PlaceObject(Event e)
     {
         if (!TryRaycast(e.mousePosition, _mapBuilder.CellLayer, out var hit))

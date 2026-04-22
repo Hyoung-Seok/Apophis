@@ -15,16 +15,17 @@ public class CellHighlighter
     private HashSet<int> _highlightedCells = new();
     private HashSet<int> _rangeBuffer = new();
 
-    private readonly Color _rangeColor;
+    private readonly Color _selectColor = Color.green;
+    private readonly Color _removeColor = Color.red;
+    
     private MaterialPropertyBlock _mpb;
     private MaterialPropertyBlock _assetMpb;
 
     private bool _isDirty;
 
-    public CellHighlighter(MapBuilder mapBuilder, Color color)
+    public CellHighlighter(MapBuilder mapBuilder)
     {
         _mapBuilder = mapBuilder;
-        _rangeColor = color;
 
         _placeAssetRenderers = new PlaceAssetRenderer[mapBuilder.Cells.Length];
         for (var i = 0; i < _placeAssetRenderers.Length; i++)
@@ -58,6 +59,8 @@ public class CellHighlighter
 
     public void UpdateRangeCellHighlight(int start, int end)
     {
+        var curColor = (MapBuilderEditor.CUR_MODE == EEditorMode.Place) ? _selectColor : _removeColor;
+        
         CheckRefreshCache();
         RecomputeRange(start, end);
 
@@ -79,8 +82,8 @@ public class CellHighlighter
                 continue;
             }
 
-            _mapBuilder.Cells[i].ChangeColor(_rangeColor);
-            ChangeAssetColor(_placeAssetRenderers[i]);
+            _mapBuilder.Cells[i].ChangeColor(curColor);
+            ChangeAssetColor(_placeAssetRenderers[i], curColor);
         }
 
         (_highlightedCells, _rangeBuffer) = (_rangeBuffer, _highlightedCells);
@@ -126,7 +129,7 @@ public class CellHighlighter
         ClearRemoveHighlight();
 
         _mpb ??= new MaterialPropertyBlock();
-        _mpb.SetColor(Cell.BASE_COLOR, Color.red);
+        _mpb.SetColor(Cell.BASE_COLOR, _removeColor);
         objRenderer.SetPropertyBlock(_mpb);
 
         _prevRemoveHoverAssetRenderer = objRenderer;
@@ -201,10 +204,10 @@ public class CellHighlighter
         }
     }
 
-    private void ChangeAssetColor(PlaceAssetRenderer asset)
+    private void ChangeAssetColor(PlaceAssetRenderer asset, Color color)
     {
         _assetMpb ??= new MaterialPropertyBlock();
-        _assetMpb.SetColor(Cell.BASE_COLOR, _rangeColor);
+        _assetMpb.SetColor(Cell.BASE_COLOR, color);
         asset.ApplyBlock(_assetMpb);
     }
 
