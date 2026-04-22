@@ -7,20 +7,21 @@ public class PlaceAssetRenderer
 
     public void ApplyBlock(MaterialPropertyBlock mpb)
     {
-        if (FloorRenderer == null) return;
-
-        foreach (var floor in FloorRenderer)
+        if (FloorRenderer != null)
         {
-            floor.SetPropertyBlock(mpb);
+            foreach (var floor in FloorRenderer)
+            {
+                if (floor == null) continue;
+                floor.SetPropertyBlock(mpb);
+            }
         }
 
         for (var i = 0; i < 4; ++i)
         {
-            if(WallRenderer[i] == null) continue;
-            
+            if (WallRenderer[i] == null) continue;
             foreach (var wall in WallRenderer[i])
             {
-                if(wall == null) continue;
+                if (wall == null) continue;
                 wall.SetPropertyBlock(mpb);
             }
         }
