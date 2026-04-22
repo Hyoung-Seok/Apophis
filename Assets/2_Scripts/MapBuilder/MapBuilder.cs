@@ -14,6 +14,8 @@ public class MapBuilder : MonoBehaviour
     public Transform LevelParent => levelParent;
     public CellAssetData[] CellAssetsArr => cellAssetArr;
     public List<FreeAssetData> FreeAssetList => freeAssetList;
+    public event Action OnLevelDataDeleted;
+    public event Action OnGridCreated;
     
     [SerializeField] private GameObject cellObj;
     [SerializeField] private LayerMask cellLayer;
@@ -66,6 +68,7 @@ public class MapBuilder : MonoBehaviour
         }
         
         DestroyImmediate(_cell);
+        OnGridCreated?.Invoke();
     }
 
     public void DestroyGrid()
@@ -145,6 +148,7 @@ public class MapBuilder : MonoBehaviour
             Undo.DestroyObjectImmediate(levelParent.GetChild(i).gameObject);
         }
         Undo.CollapseUndoOperations(groupIndex);
+        OnLevelDataDeleted?.Invoke();
     }
     
     public void SetGridSetting(LevelData levelData)

@@ -32,6 +32,7 @@ public class MapBuilderEditor : Editor
         _root = mapBuilderUxml.CloneTree();
         _mapBuilder = (MapBuilder)target;
         _cellHighlighter = new CellHighlighter(_mapBuilder, Color.green);
+        _cellHighlighter.RebuildFromHierarchy();
         
         BindingButton();
 
@@ -41,6 +42,7 @@ public class MapBuilderEditor : Editor
     public static GameObject CreateWallPivot(GameObject wallPrefab, Transform parent, float cellSize)
     {
         var pivot = new GameObject("WallPivot");
+        pivot.layer = LayerMask.NameToLayer("Wall");
         pivot.transform.SetParent(parent);
 
         var wall = Instantiate(wallPrefab, pivot.transform);
@@ -343,7 +345,7 @@ public class MapBuilderEditor : Editor
             {
                 var child = _mapBuilder.LevelParent.GetChild(i);
 
-                if (TryParseIndex(child.name, out var x, out var y)
+                if (MapBuilderUtil.TryParseIndex(child.name, out var x, out var y)
                     && x >= min.x && x <= max.x
                     && y >= min.y && y <= max.y)
                 {
@@ -551,20 +553,6 @@ public class MapBuilderEditor : Editor
         _selectedObj = Instantiate(obj, _mapBuilder.LevelParent);
         _selectedObj.SetActive(false);
     }
-
-    private bool TryParseIndex(string name, out int x, out int y)
-    {
-        x = y = 0;
-        
-        var start = name.LastIndexOf('[');
-        var end = name.LastIndexOf(']');
-        if (start == -1 || end == -1) return false;
-
-        var parts = name.Substring(start + 1, end - start - 1).Split(',');
-        return parts.Length == 2
-               && int.TryParse(parts[0], out x)
-               && int.TryParse(parts[1], out y);
-    }
     
     private bool IsSnapCellCategory => _curCategory == "Floor" || _curCategory == "Wall";
 
@@ -585,7 +573,8 @@ public class MapBuilderEditor : Editor
     private void OnDisable()
     {
         PaletteCustomEditor.OnAssetSelected -= OnPaletteAssetChanged;
-
+        
+        _cellHighlighter.Dispose();
         _startCellIndex = _endCellIndex = -1;
 
         if (_mapBuilder.Cells != null)
