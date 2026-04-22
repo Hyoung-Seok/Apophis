@@ -450,6 +450,7 @@ public class MapBuilderEditor : Editor
         var index2D =  _mapBuilder.Convert1DIndexTo2D(index);
         floorObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
 
+        _cellHighlighter.RegisterFloorRenderer(index, floorObj);
         return floorObj;
     }
 
@@ -463,6 +464,8 @@ public class MapBuilderEditor : Editor
         var index2D = _mapBuilder.Convert1DIndexTo2D(index);
         
         wallObj.name = $"{_selectedObj.name}[{index2D.x},{index2D.y}]";
+        
+        _cellHighlighter.RegisterWallRenderer(index, (int)_curRot, wallObj);
         return wallObj;
     }
 

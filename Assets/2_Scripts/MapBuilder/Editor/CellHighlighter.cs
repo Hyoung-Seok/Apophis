@@ -4,6 +4,7 @@ using UnityEngine;
 public class CellHighlighter
 {
     private readonly MapBuilder _mapBuilder;
+    private PlaceAssetRenderer[] _placeAssetRenderers;
 
     private int _prevHoverCellIndex = 0;
     private Renderer _prevRemoveHoverAssetRenderer;
@@ -15,11 +16,30 @@ public class CellHighlighter
 
     private readonly Color _rangeColor;
     private MaterialPropertyBlock _mpb;
+    private MaterialPropertyBlock _assetMpb;
     
     public CellHighlighter(MapBuilder mapBuilder, Color color)
     {
         _mapBuilder = mapBuilder;
         _rangeColor = color;
+        
+        _placeAssetRenderers = new PlaceAssetRenderer[mapBuilder.Cells.Length];
+        for (var i = 0; i < _placeAssetRenderers.Length; i++)
+        {
+            _placeAssetRenderers[i] = new PlaceAssetRenderer();
+        }
+    }
+
+    public void RegisterFloorRenderer(int index, GameObject floor)
+    {
+        var renderer = floor.GetComponentInChildren<Renderer>();
+        _placeAssetRenderers[index].FloorRenderer = renderer;
+    }
+
+    public void RegisterWallRenderer(int index, int rot, GameObject wall)
+    {
+        var renderer = wall.GetComponentInChildren<Renderer>();
+        _placeAssetRenderers[index].WallRenderer[rot] = renderer;
     }
     
     public void UpdateRangeCellHighlight(int start, int end)
@@ -28,14 +48,24 @@ public class CellHighlighter
         
         foreach (var i in _highlightedCells)
         {
-            if(_rangeBuffer.Contains(i) == false)
-                _mapBuilder.Cells[i].RestoreColor();
+            if (_rangeBuffer.Contains(i))
+            {
+                continue;
+            }
+
+            _mapBuilder.Cells[i].RestoreColor();
+            RestoreAssetColor(_placeAssetRenderers[i]);
         }
 
         foreach (var i in _rangeBuffer)
         {
-            if(_highlightedCells.Contains(i) == false)
-                _mapBuilder.Cells[i].ChangeColor(_rangeColor);
+            if (_highlightedCells.Contains(i))
+            {
+                continue;
+            }
+
+            _mapBuilder.Cells[i].ChangeColor(_rangeColor);
+            ChangeAssetColor(_placeAssetRenderers[i]);
         }
 
         (_highlightedCells, _rangeBuffer) = (_rangeBuffer, _highlightedCells);
@@ -66,14 +96,17 @@ public class CellHighlighter
     public void RestoreAllHighlights()
     {
         foreach (var i in _highlightedCells)
+        {
             _mapBuilder.Cells[i].RestoreColor();
+            RestoreAssetColor(_placeAssetRenderers[i]);
+        }
+           
         _highlightedCells.Clear();
     }
     
-    public bool UpdateRemoveHighlight(Renderer objRenderer)
+    public void UpdateRemoveHighlight(Renderer objRenderer)
     {
-        
-        if (objRenderer == null || objRenderer == _prevRemoveHoverAssetRenderer) return false;
+        if (objRenderer == null || objRenderer == _prevRemoveHoverAssetRenderer) return;
 
         ClearRemoveHighlight();
 
@@ -82,7 +115,6 @@ public class CellHighlighter
         objRenderer.SetPropertyBlock(_mpb);
 
         _prevRemoveHoverAssetRenderer = objRenderer;
-        return true;
     }
     
     public void ClearRemoveHighlight()
@@ -109,5 +141,35 @@ public class CellHighlighter
                 _rangeBuffer.Add(_mapBuilder.Convert2DIndexTo1D(new Vector2Int(x, y)));
             }
         }
+    }
+
+    private void ChangeAssetColor(PlaceAssetRenderer asset)
+    {
+        if(asset.FloorRenderer == null) return;
+        
+        _assetMpb ??= new MaterialPropertyBlock();
+        _assetMpb.SetColor(Cell.BASE_COLOR, _rangeColor);
+        asset.FloorRenderer.SetPropertyBlock(_assetMpb);
+
+        for (var i = 0; i < 4; ++i)
+        {
+            if(asset.WallRenderer[i] == null) continue;
+            asset.WallRenderer[i].SetPropertyBlock(_assetMpb);
+        }
+    }
+
+    private void RestoreAssetColor(PlaceAssetRenderer asset)
+    {
+        if (asset.FloorRenderer == null) return;
+        
+        asset.FloorRenderer.SetPropertyBlock(null);
+        
+        for (var i = 0; i < 4; ++i)
+        {
+            if(asset.WallRenderer[i] == null) continue;
+            asset.WallRenderer[i].SetPropertyBlock(null);
+        }
+
+        _assetMpb = null;
     }
 }
