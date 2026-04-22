@@ -185,6 +185,11 @@ public class MapBuilder : MonoBehaviour
         }
     }
 
+    public void OnLevelLoaded()
+    {
+        OnGridCreated?.Invoke();
+    }
+
     private void InitCellObject()
     {
         _cell = Instantiate(cellObj, transform);
