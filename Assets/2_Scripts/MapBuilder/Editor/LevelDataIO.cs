@@ -51,6 +51,8 @@ public static class LevelDataIO
         var floors = CreateFloorAsset(data, mapBuilder.LevelParent);
         CreateWallAsset(data, floors, mapBuilder.LevelParent);
         CreateFreeObject(data, mapBuilder.LevelParent);
+        
+        mapBuilder.OnLevelLoaded();
     }
 
     private static GameObject[] CreateFloorAsset(LevelData data, Transform parent)
