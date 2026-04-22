@@ -32,14 +32,14 @@ public class CellHighlighter
 
     public void RegisterFloorRenderer(int index, GameObject floor)
     {
-        var renderer = floor.GetComponentInChildren<Renderer>();
-        _placeAssetRenderers[index].FloorRenderer = renderer;
+        _placeAssetRenderers[index].FloorRenderer
+            = floor.GetComponentsInChildren<Renderer>(true);
     }
 
     public void RegisterWallRenderer(int index, int rot, GameObject wall)
     {
-        var renderer = wall.GetComponentInChildren<Renderer>();
-        _placeAssetRenderers[index].WallRenderer[rot] = renderer;
+        _placeAssetRenderers[index].WallRenderer[rot]
+            = wall.GetComponentsInChildren<Renderer>(true);
     }
     
     public void UpdateRangeCellHighlight(int start, int end)
@@ -54,7 +54,7 @@ public class CellHighlighter
             }
 
             _mapBuilder.Cells[i].RestoreColor();
-            RestoreAssetColor(_placeAssetRenderers[i]);
+            _placeAssetRenderers[i].ClearBlock();
         }
 
         foreach (var i in _rangeBuffer)
@@ -98,7 +98,7 @@ public class CellHighlighter
         foreach (var i in _highlightedCells)
         {
             _mapBuilder.Cells[i].RestoreColor();
-            RestoreAssetColor(_placeAssetRenderers[i]);
+            _placeAssetRenderers[i].ClearBlock();
         }
            
         _highlightedCells.Clear();
@@ -145,31 +145,8 @@ public class CellHighlighter
 
     private void ChangeAssetColor(PlaceAssetRenderer asset)
     {
-        if(asset.FloorRenderer == null) return;
-        
         _assetMpb ??= new MaterialPropertyBlock();
         _assetMpb.SetColor(Cell.BASE_COLOR, _rangeColor);
-        asset.FloorRenderer.SetPropertyBlock(_assetMpb);
-
-        for (var i = 0; i < 4; ++i)
-        {
-            if(asset.WallRenderer[i] == null) continue;
-            asset.WallRenderer[i].SetPropertyBlock(_assetMpb);
-        }
-    }
-
-    private void RestoreAssetColor(PlaceAssetRenderer asset)
-    {
-        if (asset.FloorRenderer == null) return;
-        
-        asset.FloorRenderer.SetPropertyBlock(null);
-        
-        for (var i = 0; i < 4; ++i)
-        {
-            if(asset.WallRenderer[i] == null) continue;
-            asset.WallRenderer[i].SetPropertyBlock(null);
-        }
-
-        _assetMpb = null;
+        asset.ApplyBlock(_assetMpb);
     }
 }
