@@ -30,7 +30,7 @@ public class PlayerMoveState : BaseState<PlayerStateController>
         {
             var targetRot = Quaternion.LookRotation(dir);
             Controller.transform.rotation = Quaternion.RotateTowards(
-                transform.rotation,
+                Controller.transform.rotation,
                 targetRot,
                 rotationSpeed * Time.deltaTime);
         }

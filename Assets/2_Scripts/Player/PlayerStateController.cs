@@ -16,4 +16,27 @@ public class PlayerStateController : BaseStateController
         
         base.Awake();
     }
+
+    private void OnEnable()
+    {
+        GameInput.Player.Aim.started += OnAimStart;
+        GameInput.Player.Aim.canceled += OnAimStop;
+        
+    }
+
+    private void OnDisable()
+    {
+        GameInput.Player.Aim.started -= OnAimStart;
+        GameInput.Player.Aim.canceled -= OnAimStop;
+    }
+
+    private void OnAimStart(InputAction.CallbackContext _)
+    {
+        ChangeSubState(GetState<PlayerAimState>());
+    }
+
+    private void OnAimStop(InputAction.CallbackContext _)
+    {
+        ClearSubState();
+    }
 }
