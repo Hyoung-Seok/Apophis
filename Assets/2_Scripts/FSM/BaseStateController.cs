@@ -9,7 +9,7 @@ public class BaseStateController : MonoBehaviour
     [field: SerializeField] public BaseState SubState { get; protected set; }
     [SerializeField] private List<BaseState> states = new();
 
-    private void Awake()
+    protected virtual void Awake()
     {
         foreach (var state in states)
         {
