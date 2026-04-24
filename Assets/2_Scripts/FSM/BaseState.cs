@@ -1,16 +1,15 @@
 using UnityEngine;
 
-public class BaseState : MonoBehaviour
+public abstract class BaseState : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    protected BaseStateController Controller;
 
-    // Update is called once per frame
-    void Update()
+    public virtual void Init(BaseStateController controller)
     {
-        
+        Controller = controller;
     }
+    
+    public abstract void OnStateEnter();
+    public abstract void OnUpdate();
+    public abstract void OnStateExit();
 }

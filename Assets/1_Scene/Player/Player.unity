@@ -15002,6 +15002,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1156770104}
+  - component: {fileID: 1156770107}
+  - component: {fileID: 1156770106}
   - component: {fileID: 1156770105}
   m_Layer: 0
   m_Name: Player
@@ -15051,6 +15053,34 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &1156770106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156770103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c2e77af17a113a4e81fd6d0e4217173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMoveState
+  moveSpeed: 0
+  runSpeed: 0
+--- !u!114 &1156770107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156770103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6f8f33f6567c8843b12e12efd77882c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateController
+  states:
+  - {fileID: 1156770106}
 --- !u!1 &1159269496
 GameObject:
   m_ObjectHideFlags: 0
