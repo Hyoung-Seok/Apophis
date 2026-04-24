@@ -40,6 +40,14 @@ public class BaseStateController : MonoBehaviour
         SubState.OnStateEnter();
     }
 
+    public void ClearSubState()
+    {
+        if (SubState == null) return;
+        
+        SubState.OnStateExit();
+        SubState = null;
+    }
+
     public T GetState<T>() where T : BaseState
     {
         foreach (var state in states)
