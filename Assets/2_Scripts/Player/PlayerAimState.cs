@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerAimState : BaseState<PlayerStateController>
 {
+    [SerializeField] private PlayerCameraTarget cameraTarget;
     [SerializeField] private float rotateSpeed = 1080f;
 
     private InputAction _lookAction;
@@ -18,7 +19,7 @@ public class PlayerAimState : BaseState<PlayerStateController>
     
     public override void OnStateEnter()
     {
-        
+        cameraTarget.SetAimState(true);
     }
 
     public override void OnUpdate()
@@ -30,6 +31,7 @@ public class PlayerAimState : BaseState<PlayerStateController>
         if (!plane.Raycast(ray, out var dist)) return;
         
         var aimPoint = ray.GetPoint(dist);
+        cameraTarget.SetMouseWorldPos(aimPoint);
         var dir = aimPoint - Controller.transform.position;
         dir.y = 0;
 
@@ -44,6 +46,6 @@ public class PlayerAimState : BaseState<PlayerStateController>
 
     public override void OnStateExit()
     {
-        
+        cameraTarget.SetAimState(false);
     }
 }
