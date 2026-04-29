@@ -2,9 +2,34 @@ using UnityEngine;
 
 public abstract class Bullet : MonoBehaviour
 {
-    [SerializeField] private BulletData data;
+    private BulletData _data;
+    private Vector3 _dir;
+    private GameObject _owner;
+
+    private const float LIFE_TIME = 2f;
+    private float _curTime = 0f;
 
     public abstract void OnHit(IDamageable hit);
+
+    public void Init(BulletData data, Vector3 dir, GameObject owner)
+    {
+        _data = data;
+        _dir = dir;
+        _owner = owner;
+    }
+
+    private void Update()
+    {
+        if (_curTime >= LIFE_TIME)
+        {
+            // TODO : 나중에 풀로 돌아가도록 교체
+            Destroy(gameObject);
+            return;
+        }
+        
+        transform.position += _dir * _data.MuzzleVelocity *  Time.deltaTime;
+        _curTime += Time.deltaTime;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
