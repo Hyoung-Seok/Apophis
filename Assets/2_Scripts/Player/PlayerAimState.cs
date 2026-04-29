@@ -20,6 +20,7 @@ public class PlayerAimState : BaseState<PlayerStateController>
     public override void OnStateEnter()
     {
         cameraTarget.SetAimState(true);
+        Controller.EquippedWeapon.SetAimMode(EAimMode.Aimed);
     }
 
     public override void OnUpdate()
@@ -47,5 +48,6 @@ public class PlayerAimState : BaseState<PlayerStateController>
     public override void OnStateExit()
     {
         cameraTarget.SetAimState(false);
+        Controller.EquippedWeapon.SetAimMode(EAimMode.Hip);
     }
 }
