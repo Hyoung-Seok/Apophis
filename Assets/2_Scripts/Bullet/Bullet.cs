@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class Bullet : MonoBehaviour
 {
-    private BulletData _data;
+    protected BulletData Data;
     private Vector3 _dir;
     private GameObject _owner;
 
@@ -13,7 +13,7 @@ public abstract class Bullet : MonoBehaviour
 
     public void Init(BulletData data, Vector3 dir, GameObject owner)
     {
-        _data = data;
+        Data = data;
         _dir = dir;
         _owner = owner;
     }
@@ -27,7 +27,7 @@ public abstract class Bullet : MonoBehaviour
             return;
         }
         
-        transform.position += _dir * _data.MuzzleVelocity *  Time.deltaTime;
+        transform.position += _dir * Data.MuzzleVelocity *  Time.deltaTime;
         _curTime += Time.deltaTime;
     }
 
@@ -37,5 +37,8 @@ public abstract class Bullet : MonoBehaviour
         {
             OnHit(hit);
         }
+        
+        // TODO : 풀로 돌아가도록 교체
+        Destroy(gameObject);
     }
 }
