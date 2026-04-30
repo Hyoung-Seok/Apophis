@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b5f156a5c4ba641a74041a436f7760, type: 3}
+  m_Name: DummyBulletData
+  m_EditorClassIdentifier: Assembly-CSharp::BulletData
+  baseDamage: 10
+  criticalChance: 0.2
+  criticalRatio: 1.2
+  muzzleVelocity: 10
+  recoilMultiplier: 0.2
+  bulletPrefab: {fileID: 5671019718948991047, guid: afe8ef72da50235458dd0c4822dbeb33, type: 3}

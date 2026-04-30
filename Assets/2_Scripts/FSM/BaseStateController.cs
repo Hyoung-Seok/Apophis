@@ -57,13 +57,13 @@ public class BaseStateController : MonoBehaviour
         return null;
     }
     
-    private void Start()
+    protected virtual void Start()
     {
         MainState?.OnStateEnter();
         SubState?.OnStateEnter();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         MainState?.OnUpdate();
         SubState?.OnUpdate();
