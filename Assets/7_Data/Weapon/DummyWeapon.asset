@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   caliber: 0
   fireDelay: 0.3
-  baseSpreadAngle: 1
-  maxSpreadAngle: 6
-  spreadIncRate: 0.4
-  spreadRecRate: 3.01
+  baseSpreadAngle: 3
+  maxSpreadAngle: 10
+  spreadIncRate: 0.3
+  spreadRecRate: 1.05
+  hipMaxSpreadAngle: 20
+  hipSpreadIncRate: 0.6
+  hipSpreadRecRate: 5

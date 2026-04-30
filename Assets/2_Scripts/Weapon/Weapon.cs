@@ -5,24 +5,22 @@ using Random = UnityEngine.Random;
 
 public class Weapon : MonoBehaviour
 {
-    public void SetAimMode(EAimMode mode) => _aimMode = mode;
-    
     [SerializeField] private WeaponData data;
     [SerializeField] private Transform firePoint;
-    
+
     private EAimMode _aimMode;
     private Magazine _currentMag;
     private float _lastTime = float.NegativeInfinity;
     
-    private float _curHalfAngle;
     private float _baseHalfAngle;
+    private float _curHalfAngle;
     private float _maxHalfAngle;
+    private float _curIncRate;
+    private float _curRecRate;
     
     protected virtual void Start()
     {
-        _baseHalfAngle = data.BaseSpreadAngel / 2f;
-        _curHalfAngle = _baseHalfAngle;
-        _maxHalfAngle = data.MaxSpreadAngle / 2f;
+        SetAimMode(EAimMode.Hip);
     }
 
     private void Update()
@@ -30,7 +28,7 @@ public class Weapon : MonoBehaviour
         if (_curHalfAngle <= _baseHalfAngle) return;
         
         _curHalfAngle = Mathf.MoveTowards(_curHalfAngle, _baseHalfAngle,
-            Time.deltaTime * data.SpreadRecRate);
+            Time.deltaTime * _curRecRate);
     }
     
     public virtual bool TryFire()
@@ -63,11 +61,39 @@ public class Weapon : MonoBehaviour
         return prevMag;
     }
 
+    public void SetAimMode(EAimMode mode)
+    { 
+        _aimMode = mode;
+        
+        _baseHalfAngle = data.BaseSpreadAngle / 2f;
+        _curHalfAngle = _baseHalfAngle;
+        
+        switch (_aimMode)
+        {
+            case EAimMode.Hip:
+                _maxHalfAngle = data.HipMaxSpreadAngle / 2f;
+
+                _curIncRate = data.HipSpreadIncRate;
+                _curRecRate = data.HipSpreadRecRate;
+                break;
+            
+            case EAimMode.Aimed:
+                _maxHalfAngle = data.MaxSpreadAngle / 2f;
+
+                _curIncRate = data.SpreadIncRate;
+                _curRecRate = data.SpreadRecRate;
+                break;
+            
+            default:
+                return;
+        }
+    } 
+
     protected virtual Vector3 CalculateRecoil()
     {
         if (_curHalfAngle < _maxHalfAngle)
         {
-            _curHalfAngle += (_maxHalfAngle - _curHalfAngle) * data.SpreadIncRate;
+            _curHalfAngle += (_maxHalfAngle - _curHalfAngle) * _curIncRate;
         }
         var randAngle = Random.Range(-_curHalfAngle, _curHalfAngle);
         var dir = Quaternion.AngleAxis(randAngle, Vector3.up) * firePoint.forward;

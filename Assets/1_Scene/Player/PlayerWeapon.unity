@@ -1259,7 +1259,7 @@ MonoBehaviour:
   magazines:
   - Data: {fileID: 11400000, guid: 546eb79f365e3b24eb421e84132d2634, type: 2}
     LoadedAmmo: {fileID: 11400000, guid: 2e447d11c305d6448910ca7f8310b3e6, type: 2}
-    CurrentAmmo: 30
+    CurrentAmmo: 10000
 --- !u!1 &38539920
 GameObject:
   m_ObjectHideFlags: 0
