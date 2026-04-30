@@ -3,5 +3,10 @@
     "GameObjectId": "GlobalObjectId_V1-2-69048e3bdc6a08c46b355eabcb2b2397-1174866876-0",
     "AssetGUID": "69048e3bdc6a08c46b355eabcb2b2397",
     "UniqueItemID": "GlobalObjectId_V1-2-69048e3bdc6a08c46b355eabcb2b2397-1174866876-0"
+  },
+  "GlobalObjectId_V1-2-69048e3bdc6a08c46b355eabcb2b2397-2029380843-0": {
+    "GameObjectId": "GlobalObjectId_V1-2-69048e3bdc6a08c46b355eabcb2b2397-2029380843-0",
+    "AssetGUID": "69048e3bdc6a08c46b355eabcb2b2397",
+    "UniqueItemID": "GlobalObjectId_V1-2-69048e3bdc6a08c46b355eabcb2b2397-2029380843-0"
   }
 }
