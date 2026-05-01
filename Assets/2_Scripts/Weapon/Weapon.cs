@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,6 +8,7 @@ public class Weapon : MonoBehaviour
 
     private EAimMode _aimMode;
     private Magazine _currentMag;
+    private BulletPool _bulletPool;
     private float _lastTime = float.NegativeInfinity;
     
     private float _baseHalfAngle;
@@ -21,6 +20,8 @@ public class Weapon : MonoBehaviour
     protected virtual void Start()
     {
         SetAimMode(EAimMode.Hip);
+        
+        _bulletPool = GameManager.Instance.Get<BulletPool>();
     }
 
     private void Update()
@@ -40,12 +41,10 @@ public class Weapon : MonoBehaviour
         
         if (Time.time - _lastTime < data.FireDelay) return false;
         
-        // TODO : ObjPooling을 이용해 총알 생성할것
-        var bullet = Instantiate(_currentMag.LoadedAmmo.BulletPrefab, firePoint.position, 
-            Quaternion.LookRotation(firePoint.forward));
-        
+        var bullet = _bulletPool.Get(_currentMag.LoadedAmmo);
         var dir = CalculateRecoil();
-        bullet.Init(_currentMag.LoadedAmmo, dir, gameObject);
+        
+        bullet.Init(_currentMag.LoadedAmmo, firePoint.position, dir, gameObject);
 
         _currentMag.CurrentAmmo--;
 
@@ -88,7 +87,7 @@ public class Weapon : MonoBehaviour
                 return;
         }
     } 
-
+    
     protected virtual Vector3 CalculateRecoil()
     {
         if (_curHalfAngle < _maxHalfAngle)
