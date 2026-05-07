@@ -11,8 +11,6 @@ public class PlayerStateController : BaseStateController
     [SerializeField] private Weapon equippedWeapon;
     [SerializeField] private PlayerInventory inventory;
 
-    private bool _isFiring = false;
-
     protected override void Awake()
     {
         GameInput = new GameInput();
