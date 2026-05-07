@@ -11,7 +11,7 @@ public abstract class Bullet : MonoBehaviour
     private float _curTime = 0f;
     private ObjectPool<Bullet> _pool;
 
-    public abstract void OnHit(IDamageable hit);
+    protected abstract void OnHit(IDamageable hit);
 
     public void Init(BulletData data, Vector3 pos, Vector3 dir, GameObject owner)
     {
@@ -37,7 +37,7 @@ public abstract class Bullet : MonoBehaviour
             return;
         }
         
-        transform.position += _dir * Data.MuzzleVelocity *  Time.deltaTime;
+        transform.position += _dir * (Data.MuzzleVelocity *  Time.deltaTime);
         _curTime += Time.deltaTime;
     }
 
