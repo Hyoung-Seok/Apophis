@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerAimState : BaseState<PlayerStateController>
+public class PlayerFireState : BaseState<PlayerStateController>
 {
-    [SerializeField] private PlayerCameraTarget cameraTarget;
     [SerializeField] private float rotateSpeed = 1080f;
 
     private InputAction _lookAction;
@@ -19,8 +18,7 @@ public class PlayerAimState : BaseState<PlayerStateController>
     
     public override void OnStateEnter()
     {
-        cameraTarget.SetAimState(true);
-        Controller.EquippedWeapon.SetAimMode(EAimMode.Aimed);
+
     }
 
     public override void OnUpdate()
@@ -32,9 +30,10 @@ public class PlayerAimState : BaseState<PlayerStateController>
         if (!plane.Raycast(ray, out var dist)) return;
         
         var aimPoint = ray.GetPoint(dist);
-        cameraTarget.SetMouseWorldPos(aimPoint);
+        Controller.CameraTarget.SetMouseWorldPos(aimPoint);
         var dir = aimPoint - Controller.transform.position;
         dir.y = 0;
+        Controller.EquippedWeapon.SetAimDir(dir);
 
         if (dir.sqrMagnitude < 0.01f) return;
         
@@ -47,7 +46,6 @@ public class PlayerAimState : BaseState<PlayerStateController>
 
     public override void OnStateExit()
     {
-        cameraTarget.SetAimState(false);
-        Controller.EquippedWeapon.SetAimMode(EAimMode.Hip);
+
     }
 }

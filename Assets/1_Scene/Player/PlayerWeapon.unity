@@ -1259,7 +1259,7 @@ MonoBehaviour:
   magazines:
   - Data: {fileID: 11400000, guid: 546eb79f365e3b24eb421e84132d2634, type: 2}
     LoadedAmmo: {fileID: 11400000, guid: 2e447d11c305d6448910ca7f8310b3e6, type: 2}
-    CurrentAmmo: 30
+    CurrentAmmo: 10000
 --- !u!1 &38539920
 GameObject:
   m_ObjectHideFlags: 0
@@ -38460,6 +38460,53 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1075586762}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1081854677
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1081854679}
+  - component: {fileID: 1081854678}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1081854678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081854677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2183d6db3abee5c468578cc7eb59d96e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  monoSystem:
+  - {fileID: 1539721724}
+--- !u!4 &1081854679
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081854677}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1539721723}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1087061043
 GameObject:
   m_ObjectHideFlags: 0
@@ -76641,6 +76688,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1423013681}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1426235574 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3030735834220169037, guid: fb2357e2a04cee440b6b5ffdb5bffcc4, type: 3}
+  m_PrefabInstance: {fileID: 1861469323}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a7abcb0955b084684628c67bf1fb0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraTarget
 --- !u!1 &1427684678
 GameObject:
   m_ObjectHideFlags: 0
@@ -82577,6 +82635,50 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1539470994}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1539721722
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1539721723}
+  - component: {fileID: 1539721724}
+  m_Layer: 0
+  m_Name: BulletPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1539721723
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539721722}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1081854679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1539721724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539721722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f206766fdbbbc99438b7c86b180aa172, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BulletPoolManager
 --- !u!1 &1540785209
 GameObject:
   m_ObjectHideFlags: 0
@@ -95761,6 +95863,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 36838667}
     - target: {fileID: 1973512691320213482, guid: fb2357e2a04cee440b6b5ffdb5bffcc4, type: 3}
+      propertyPath: cameraTarget
+      value: 
+      objectReference: {fileID: 1426235574}
+    - target: {fileID: 1973512691320213482, guid: fb2357e2a04cee440b6b5ffdb5bffcc4, type: 3}
       propertyPath: equippedWeapon
       value: 
       objectReference: {fileID: 1174866881}
@@ -105827,3 +105933,4 @@ SceneRoots:
   - {fileID: 1861469323}
   - {fileID: 1251921491}
   - {fileID: 1308186574}
+  - {fileID: 1081854679}

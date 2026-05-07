@@ -26,7 +26,7 @@ public class PlayerMoveState : BaseState<PlayerStateController>
         var input = _moveAction.ReadValue<Vector2>();
         var dir = new Vector3(input.x, 0, input.y).normalized * moveSpeed;
 
-        if (dir.sqrMagnitude > 0.01f)
+        if (Controller.SubState == null && dir.sqrMagnitude > 0.01f)
         {
             var targetRot = Quaternion.LookRotation(dir);
             Controller.transform.rotation = Quaternion.RotateTowards(
