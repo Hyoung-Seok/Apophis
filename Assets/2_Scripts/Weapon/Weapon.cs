@@ -4,6 +4,7 @@ using Random = UnityEngine.Random;
 public class Weapon : MonoBehaviour
 {
     public EFireMode CurFireMode => _curFireMode;
+    public void SetAimDir(Vector3 dir) => _curAimDir = dir;
     
     [SerializeField] private WeaponData data;
     [SerializeField] private Transform firePoint;
@@ -22,7 +23,9 @@ public class Weapon : MonoBehaviour
     
     private bool _isFiring = false;
     private int _burstCount = 0;
+    private Vector3 _curAimDir;
     private const int BURST_SHOT_COUNT = 3;
+    private const float AIM_ANGLE_THRESHOLD = 10f;
     
     protected virtual void Start()
     {
@@ -40,18 +43,7 @@ public class Weapon : MonoBehaviour
     public virtual void OnFirePress()
     {
         if (_isFiring) return;
-
-        switch (_curFireMode)
-        {
-            case EFireMode.Single:
-                TryFire();
-                return;
-            
-            case EFireMode.Burst:
-            case EFireMode.Auto:
-                _isFiring = true;
-                break;
-        }
+        _isFiring = true;
     }
 
     public virtual void OnFireRelease()
@@ -143,9 +135,15 @@ public class Weapon : MonoBehaviour
     private void UpdateFiring()
     {
         if (_isFiring == false) return;
+
+        if (Vector3.Angle(firePoint.forward, _curAimDir) > AIM_ANGLE_THRESHOLD) return;
  
         switch (_curFireMode)
         {
+            case EFireMode.Single:
+                if(TryFire()) _isFiring = false;
+                break;
+            
             case EFireMode.Burst:
                 if (TryFire() == false) return;
 

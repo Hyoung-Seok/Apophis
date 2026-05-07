@@ -33,6 +33,7 @@ public class PlayerFireState : BaseState<PlayerStateController>
         Controller.CameraTarget.SetMouseWorldPos(aimPoint);
         var dir = aimPoint - Controller.transform.position;
         dir.y = 0;
+        Controller.EquippedWeapon.SetAimDir(dir);
 
         if (dir.sqrMagnitude < 0.01f) return;
         
