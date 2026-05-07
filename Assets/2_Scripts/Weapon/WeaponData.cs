@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "WeaponData", menuName = "Weapon/WeaponData")]
 public class WeaponData : ScriptableObject
 {
     public ECaliber Caliber => caliber;
+    public List<EFireMode> SupportedMode => supportedMode;
     public float FireDelay => fireDelay;
     public float BaseSpreadAngle => baseSpreadAngle;
     public float MaxSpreadAngle => maxSpreadAngle;
@@ -14,6 +16,7 @@ public class WeaponData : ScriptableObject
     public float HipSpreadRecRate => hipSpreadRecRate;
 
     [SerializeField] private ECaliber caliber;
+    [SerializeField] private List<EFireMode> supportedMode;
     [SerializeField] private float fireDelay;
     
     [Header("Aimed")]

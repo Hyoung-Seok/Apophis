@@ -27,16 +27,6 @@ public class PlayerStateController : BaseStateController
         equippedWeapon.ChangeMagazine(inventory.Magazines[0]);
     }
 
-    protected override void Update()
-    {
-        base.Update();
-        
-        if (_isFiring == true)
-        {
-            equippedWeapon.TryFire();
-        }
-    }
-
     private void OnEnable()
     {
         GameInput.Player.Aim.started += OnAimStart;
@@ -44,6 +34,8 @@ public class PlayerStateController : BaseStateController
 
         GameInput.Player.Fire.started += OnFireStart;
         GameInput.Player.Fire.canceled += OnFireEnd;
+
+        GameInput.Player.ChangeFireMode.started += OnSwitchFireMode;
     }
 
     private void OnDisable()
@@ -53,6 +45,8 @@ public class PlayerStateController : BaseStateController
         
         GameInput.Player.Fire.started -= OnFireStart;
         GameInput.Player.Fire.canceled -= OnFireEnd;
+        
+        GameInput.Player.ChangeFireMode.started -= OnSwitchFireMode;
     }
 
     private void OnAimStart(InputAction.CallbackContext _)
@@ -65,6 +59,7 @@ public class PlayerStateController : BaseStateController
         ClearSubState();
     }
 
-    private void OnFireStart(InputAction.CallbackContext _) => _isFiring = true;
-    private void OnFireEnd(InputAction.CallbackContext _) => _isFiring = false;
+    private void OnFireStart(InputAction.CallbackContext _) => equippedWeapon.OnFirePress();
+    private void OnFireEnd(InputAction.CallbackContext _) => equippedWeapon.OnFireRelease();
+    private void OnSwitchFireMode(InputAction.CallbackContext _) => equippedWeapon.SwitchFireMode();
 }

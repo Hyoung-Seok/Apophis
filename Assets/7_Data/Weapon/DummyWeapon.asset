@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: DummyWeapon
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   caliber: 0
+  supportedMode: 000000000100000002000000
   fireDelay: 0.3
   baseSpreadAngle: 3
   maxSpreadAngle: 10

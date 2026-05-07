@@ -3,9 +3,12 @@ using Random = UnityEngine.Random;
 
 public class Weapon : MonoBehaviour
 {
+    public EFireMode CurFireMode => _curFireMode;
+    
     [SerializeField] private WeaponData data;
     [SerializeField] private Transform firePoint;
 
+    private EFireMode _curFireMode;
     private EAimMode _aimMode;
     private Magazine _currentMag;
     private BulletPool _bulletPool;
@@ -17,39 +20,45 @@ public class Weapon : MonoBehaviour
     private float _curIncRate;
     private float _curRecRate;
     
+    private bool _isFiring = false;
+    private int _burstCount = 0;
+    private const int BURST_SHOT_COUNT = 3;
+    
     protected virtual void Start()
     {
+        _curFireMode = data.SupportedMode[0];
         SetAimMode(EAimMode.Hip);
-        
         _bulletPool = GameManager.Instance.Get<BulletPool>();
     }
 
     private void Update()
     {
-        if (_curHalfAngle <= _baseHalfAngle) return;
-        
-        _curHalfAngle = Mathf.MoveTowards(_curHalfAngle, _baseHalfAngle,
-            Time.deltaTime * _curRecRate);
+        UpdateFiring();
+        UpdateSpreadRecovery();
     }
     
-    public virtual bool TryFire()
+    public virtual void OnFirePress()
     {
-        if (_currentMag.IsEmpty)
+        if (_isFiring) return;
+
+        switch (_curFireMode)
         {
-            return false;
+            case EFireMode.Single:
+                TryFire();
+                return;
+            
+            case EFireMode.Burst:
+            case EFireMode.Auto:
+                _isFiring = true;
+                break;
         }
-        
-        if (Time.time - _lastTime < data.FireDelay) return false;
-        
-        var bullet = _bulletPool.Get(_currentMag.LoadedAmmo);
-        var dir = CalculateRecoil();
-        
-        bullet.Init(_currentMag.LoadedAmmo, firePoint.position, dir, gameObject);
+    }
 
-        _currentMag.CurrentAmmo--;
-
-        _lastTime = Time.time;
-        return true;
+    public virtual void OnFireRelease()
+    {
+        if (_burstCount != 0) return;
+        
+        _isFiring = false;
     }
     
     public Magazine ChangeMagazine(Magazine magazine)
@@ -86,7 +95,38 @@ public class Weapon : MonoBehaviour
             default:
                 return;
         }
-    } 
+    }
+
+    public void SwitchFireMode()
+    {
+        if (_isFiring) return;
+        
+        var curModeIndex = data.SupportedMode.IndexOf(_curFireMode);
+        var nextIndex = (curModeIndex + 1) % data.SupportedMode.Count;
+        _curFireMode = data.SupportedMode[nextIndex];
+        
+        Debug.Log($"Current Fire Mode: {_curFireMode}");
+    }
+    
+    protected virtual bool TryFire()
+    {
+        if (_currentMag.IsEmpty)
+        {
+            return false;
+        }
+        
+        if (Time.time - _lastTime < data.FireDelay) return false;
+        
+        var bullet = _bulletPool.Get(_currentMag.LoadedAmmo);
+        var dir = CalculateRecoil();
+        
+        bullet.Init(_currentMag.LoadedAmmo, firePoint.position, dir, gameObject);
+
+        _currentMag.CurrentAmmo--;
+
+        _lastTime = Time.time;
+        return true;
+    }
     
     protected virtual Vector3 CalculateRecoil()
     {
@@ -98,6 +138,39 @@ public class Weapon : MonoBehaviour
         var dir = Quaternion.AngleAxis(randAngle, Vector3.up) * firePoint.forward;
 
         return dir;
+    }
+
+    private void UpdateFiring()
+    {
+        if (_isFiring == false) return;
+ 
+        switch (_curFireMode)
+        {
+            case EFireMode.Burst:
+                if (TryFire() == false) return;
+
+                _burstCount++;
+                if (_burstCount < BURST_SHOT_COUNT) return;
+                
+                _burstCount = 0;
+                _isFiring = false;
+                break;
+
+            case EFireMode.Auto:
+                TryFire();
+                break;
+            
+            default:
+                return;
+        }
+    }
+
+    private void UpdateSpreadRecovery()
+    {
+        if (_curHalfAngle <= _baseHalfAngle) return;
+        
+        _curHalfAngle = Mathf.MoveTowards(_curHalfAngle, _baseHalfAngle,
+            Time.deltaTime * _curRecRate);
     }
 
     private void OnDrawGizmosSelected()
