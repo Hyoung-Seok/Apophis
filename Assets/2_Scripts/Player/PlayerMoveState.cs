@@ -5,9 +5,11 @@ public class PlayerMoveState : BaseState<PlayerStateController>
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private float runSpeed;
+    [SerializeField] private float aimSpeed;
     [SerializeField] private float rotationSpeed;
     
     private InputAction _moveAction;
+    private readonly int _speedKey = Animator.StringToHash("Speed");
 
     public override void Init(BaseStateController controller)
     {
@@ -24,6 +26,7 @@ public class PlayerMoveState : BaseState<PlayerStateController>
     public override void OnUpdate()
     {
         var input = _moveAction.ReadValue<Vector2>();
+        var curSpeed = NormalizeSpeed();
         var dir = new Vector3(input.x, 0, input.y).normalized * moveSpeed;
 
         if (Controller.SubState == null && dir.sqrMagnitude > 0.01f)
@@ -36,10 +39,19 @@ public class PlayerMoveState : BaseState<PlayerStateController>
         }
         
         Controller.Cc.Move(dir * Time.deltaTime);
+        Controller.Animator.SetFloat(_speedKey, curSpeed, 0.15f, Time.deltaTime);
     }
 
     public override void OnStateExit()
     {
         
+    }
+
+    private float NormalizeSpeed()
+    {
+        var rawSpeed = Controller.Cc.velocity.magnitude;
+        var normalize = rawSpeed / runSpeed;
+
+        return normalize;
     }
 }

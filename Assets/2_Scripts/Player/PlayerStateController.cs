@@ -7,12 +7,14 @@ public class PlayerStateController : BaseStateController
     public CharacterController Cc => cc;
     public Weapon EquippedWeapon => equippedWeapon;
     public PlayerCameraTarget CameraTarget => cameraTarget;
+    public Animator Animator => animator;
     
     [Header("Components")]
     [SerializeField] private CharacterController cc;
     [SerializeField] private Weapon equippedWeapon;
     [SerializeField] private PlayerInventory inventory;
     [SerializeField] private PlayerCameraTarget cameraTarget;
+    [SerializeField] private Animator animator;
 
     private bool _isFiring = false;
     private bool _isAiming = false;
@@ -64,7 +66,6 @@ public class PlayerStateController : BaseStateController
 
     private void OnAimStop(InputAction.CallbackContext _)
     {
-
         _isAiming = false;
         UpdateFireSubState();
         
