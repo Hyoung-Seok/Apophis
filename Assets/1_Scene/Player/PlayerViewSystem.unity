@@ -25253,6 +25253,7 @@ MonoBehaviour:
   inventory: {fileID: 7092646571854984607}
   cameraTarget: {fileID: 3030735836192333111}
   animator: {fileID: 371149682882371585}
+  aimController: {fileID: 8663182215662134575}
 --- !u!1 &1975816269360348667
 GameObject:
   m_ObjectHideFlags: 0
@@ -60018,7 +60019,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 821a11c2ee0db3d459bab142c147f13f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAimController
-  controller: {fileID: 1973512692013077904}
   rotationSpeed: 1080
 --- !u!1 &8666275671758015703
 GameObject:

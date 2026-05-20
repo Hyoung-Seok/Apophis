@@ -15,6 +15,7 @@ public class PlayerStateController : BaseStateController
     [SerializeField] private PlayerInventory inventory;
     [SerializeField] private PlayerCameraTarget cameraTarget;
     [SerializeField] private Animator animator;
+    [SerializeField] private PlayerAimController aimController;
 
     private bool _isFiring = false;
     private bool _isAiming = false;
@@ -23,6 +24,8 @@ public class PlayerStateController : BaseStateController
     {
         GameInput = new GameInput();
         GameInput.Enable();
+        
+        aimController.Init(this);
         
         base.Awake();
     }
