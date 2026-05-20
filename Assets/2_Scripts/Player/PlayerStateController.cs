@@ -58,7 +58,6 @@ public class PlayerStateController : BaseStateController
     private void OnAimStart(InputAction.CallbackContext _)
     {
         _isAiming = true;
-        UpdateFireSubState();
         
         cameraTarget.SetAimState(_isAiming);
         equippedWeapon.SetAimMode(EAimMode.Aimed);
@@ -67,7 +66,6 @@ public class PlayerStateController : BaseStateController
     private void OnAimStop(InputAction.CallbackContext _)
     {
         _isAiming = false;
-        UpdateFireSubState();
         
         cameraTarget.SetAimState(_isAiming);
         equippedWeapon.SetAimMode(EAimMode.Hip);
@@ -76,30 +74,13 @@ public class PlayerStateController : BaseStateController
     private void OnFireStart(InputAction.CallbackContext _)
     {
         _isFiring = true;
-        UpdateFireSubState();
         EquippedWeapon.OnFirePress();
     }
 
     private void OnFireEnd(InputAction.CallbackContext _)
     {
         _isFiring = false;
-        UpdateFireSubState();
         EquippedWeapon.OnFireRelease();
-    }
-
-    private void UpdateFireSubState()
-    {
-        var subState = GetState<PlayerFireState>();
-        var shouldBeActive = _isFiring || _isAiming;
-        
-        if (shouldBeActive && SubState != subState)
-        {
-            ChangeSubState(subState);
-        }
-        else if(shouldBeActive == false && subState != null)
-        {
-            ClearSubState();
-        }
     }
     
     private void OnSwitchFireMode(InputAction.CallbackContext _) => equippedWeapon.SwitchFireMode();
